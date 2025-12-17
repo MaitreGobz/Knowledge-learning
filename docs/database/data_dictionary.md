@@ -10,6 +10,8 @@
 - is_verified (boolean, not null, default false)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
+- created_by (int)
+- update_by (int)
 
 ## themes
 
@@ -19,6 +21,8 @@
 - slug (varchar, unique, not null)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
+- created_by (int)
+- update_by (int)
 
 ## cursus
 
@@ -30,6 +34,8 @@
 - is_active (boolean, not null, default true)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
+- created_by (int)
+- update_by (int)
 
 ## lessons
 
@@ -43,6 +49,8 @@
 - is_active (boolean, not null, default true)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
+- created_by (int)
+- update_by (int)
 
 ## purchases
 
@@ -56,6 +64,8 @@
 - stripe_session_id (varchar, unique, nullable)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
+- created_by (int)
+- update_by (int)
 
 ## access_rights
 
@@ -67,6 +77,8 @@
 - purchase_id (FK -> purchases.id, nullable)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
+- created_by (int)
+- update_by (int)
 
 ## lesson_validations
 
@@ -76,6 +88,8 @@
 - validated_at (datetime, not null)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
+- created_by (int)
+- update_by (int)
 
 ## cursus_validations
 
@@ -85,6 +99,8 @@
 - validated_at (datetime, not null)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
+- created_by (int)
+- update_by (int)
 
 ## certifications
 
@@ -94,3 +110,5 @@
 - validated_at (datetime, not null)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
+- created_by (int)
+- update_by (int)
