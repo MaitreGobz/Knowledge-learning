@@ -10,6 +10,8 @@ Table users {
   is_verified boolean [not null, default: false]
   created_at datetime [not null]
   updated_at datetime [not null]
+  created_by int
+  updated_by int
 }
 
 Table themes {
@@ -19,6 +21,8 @@ Table themes {
   slug varchar [unique, not null]
   created_at datetime [not null]
   updated_at datetime [not null]
+  created_by int
+  updated_by int
 }
 
 Table cursus {
@@ -30,6 +34,8 @@ Table cursus {
   is_active boolean [not null, default: true]
   created_at datetime [not null]
   updated_at datetime [not null]
+  created_by int
+  updated_by int
 }
 
 Table lessons {
@@ -43,6 +49,8 @@ Table lessons {
   is_active boolean [not null, default: true]
   created_at datetime [not null]
   updated_at datetime [not null]
+  created_by int
+  updated_by int
 }
 
 Table purchases {
@@ -55,7 +63,9 @@ Table purchases {
   status varchar [not null] // PENDING | PAID | CANCELED
   stripe_session_id varchar
   created_at datetime [not null]
-  updated_at datetime [not null] 
+  updated_at datetime [not null]
+  created_by int
+  updated_by int
 
   Indexes {
     (user_id)
@@ -74,6 +84,8 @@ Table access_rights {
   purchase_id int [ref: > purchases.id]
   created_at datetime [not null]
   updated_at datetime [not null]
+  created_by int
+  updated_by int
 
   Indexes {
     (user_id)
@@ -91,6 +103,8 @@ Table lesson_validations {
   validated_at datetime [not null]
   created_at datetime [not null]
   updated_at datetime [not null]
+  created_by int
+  updated_by int
 
   Indexes {
     (user_id, lesson_id) [unique]
@@ -104,6 +118,8 @@ Table cursus_validations {
   validated_at datetime [not null]
   created_at datetime [not null]
   updated_at datetime [not null]
+  created_by int
+  updated_by int
 
   Indexes {
     (user_id, cursus_id) [unique]
@@ -117,6 +133,8 @@ Table certifications {
   validated_at datetime [not null]
   created_at datetime [not null]
   updated_at datetime [not null]
+  created_by int
+  updated_by int
 
   Indexes {
     (user_id, theme_id) [unique]
