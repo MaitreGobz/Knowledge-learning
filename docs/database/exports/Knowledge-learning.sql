@@ -6,7 +6,9 @@ CREATE TABLE `users` (
   `is_active` boolean NOT NULL DEFAULT true,
   `is_verified` boolean NOT NULL DEFAULT false,
   `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL
+  `updated_at` datetime NOT NULL,
+  `created_by` int,
+  `updated_by` int
 );
 
 CREATE TABLE `themes` (
@@ -15,7 +17,9 @@ CREATE TABLE `themes` (
   `description` text NOT NULL,
   `slug` varchar(255) UNIQUE NOT NULL,
   `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL
+  `updated_at` datetime NOT NULL,
+  `created_by` int,
+  `updated_by` int
 );
 
 CREATE TABLE `cursus` (
@@ -26,7 +30,9 @@ CREATE TABLE `cursus` (
   `price` int NOT NULL,
   `is_active` boolean NOT NULL DEFAULT true,
   `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL
+  `updated_at` datetime NOT NULL,
+  `created_by` int,
+  `updated_by` int
 );
 
 CREATE TABLE `lessons` (
@@ -39,7 +45,9 @@ CREATE TABLE `lessons` (
   `price` int NOT NULL,
   `is_active` boolean NOT NULL DEFAULT true,
   `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL
+  `updated_at` datetime NOT NULL,
+  `created_by` int,
+  `updated_by` int
 );
 
 CREATE TABLE `purchases` (
@@ -52,7 +60,9 @@ CREATE TABLE `purchases` (
   `status` varchar(255) NOT NULL,
   `stripe_session_id` varchar(255),
   `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL
+  `updated_at` datetime NOT NULL,
+  `created_by` int,
+  `updated_by` int
 );
 
 CREATE TABLE `access_rights` (
@@ -63,7 +73,9 @@ CREATE TABLE `access_rights` (
   `granted_at` datetime NOT NULL,
   `purchase_id` int,
   `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL
+  `updated_at` datetime NOT NULL,
+  `created_by` int,
+  `updated_by` int
 );
 
 CREATE TABLE `lesson_validations` (
@@ -72,7 +84,9 @@ CREATE TABLE `lesson_validations` (
   `lesson_id` int NOT NULL,
   `validated_at` datetime NOT NULL,
   `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL
+  `updated_at` datetime NOT NULL,
+  `created_by` int,
+  `updated_by` int
 );
 
 CREATE TABLE `cursus_validations` (
@@ -81,7 +95,9 @@ CREATE TABLE `cursus_validations` (
   `cursus_id` int NOT NULL,
   `validated_at` datetime NOT NULL,
   `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL
+  `updated_at` datetime NOT NULL,
+  `created_by` int,
+  `updated_by` int
 );
 
 CREATE TABLE `certifications` (
@@ -90,7 +106,9 @@ CREATE TABLE `certifications` (
   `theme_id` int NOT NULL,
   `validated_at` datetime NOT NULL,
   `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL
+  `updated_at` datetime NOT NULL,
+  `created_by` int,
+  `updated_by` int
 );
 
 CREATE INDEX `purchases_index_0` ON `purchases` (`user_id`);
