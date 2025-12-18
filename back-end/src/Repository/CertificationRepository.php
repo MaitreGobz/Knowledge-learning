@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\Certifications;
+use App\Entity\Certification;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Certifications>
+ * @extends ServiceEntityRepository<Certification>
  */
-class CertificationsRepository extends ServiceEntityRepository
+class CertificationRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Certifications::class);
+        parent::__construct($registry, Certification::class);
     }
 
     //    /**
-    //     * @return Certifications[] Returns an array of Certifications objects
+    //     * @return Certification[] Returns an array of Certification objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class CertificationsRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Certifications
+    //    public function findOneBySomeField($value): ?Certification
     //    {
     //        return $this->createQueryBuilder('c')
     //            ->andWhere('c.exampleField = :val')

@@ -99,6 +99,28 @@ ng serve
 Application accessible sur :
 [http://localhost:4200](http://localhost:4200)
 
+## Comptes de démonstration
+
+Les comptes sont déjà créer mais il peuvent l'être via les commande :
+
+- Administrateur:
+
+```bash
+php bin/console app:create-user admin@test.com Admin123! ROLE_ADMIN
+```
+
+- Utilisateur classique :
+
+```bash
+php bin/console app:create-user user@test.com User123! ROLE_USER
+```
+
+## Documentation API
+
+La documentation de l'API est générée via OpenAPI (Swagger)
+Une fois le serveur lancé, elle est accessible à l’adresse :
+[http://localhost:8000/api/doc](http://localhost:8000/api/doc)
+
 ## 💳 Paiement Stripe (Sandbox)
 
 ### Le projet utilise Stripe en mode test.

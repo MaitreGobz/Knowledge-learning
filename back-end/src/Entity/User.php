@@ -4,10 +4,12 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'users')]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -17,8 +19,8 @@ class User
     #[ORM\Column(length: 255, unique: true)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 255, name: 'password_hash')]
-    private ?string $passwordHash = null;
+    #[ORM\Column(length: 255, name: 'password')]
+    private ?string $password = null;
 
     #[ORM\Column]
     private ?array $roles = [];
@@ -51,6 +53,12 @@ class User
         return $this->email;
     }
 
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+
     public function setEmail(string $email): static
     {
         $this->email = $email;
@@ -58,24 +66,26 @@ class User
         return $this;
     }
 
-    public function getPasswordHash(): ?string
+    public function getPassword(): ?string
     {
-        return $this->passwordHash;
+        return $this->password;
     }
 
-    public function setPasswordHash(string $passwordHash): static
+    public function setPassword(string $password): static
     {
-        $this->passwordHash = $passwordHash;
+        $this->password = $password;
 
         return $this;
     }
 
-    public function getRoles(): ?string
+    public function getRoles(): array
     {
-        return $this->roles;
+        $roles = $this->roles;
+        $roles[] = 'ROLE_USER';
+        return array_values(array_unique($roles));
     }
 
-    public function setRoles(string $roles): static
+    public function setRoles(array $roles): static
     {
         $this->roles = $roles;
 
@@ -152,5 +162,10 @@ class User
         $this->updatedBy = $updatedBy;
 
         return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
     }
 }
