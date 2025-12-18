@@ -1,0 +1,39 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Knowledge Learning API",
+        "description": "Documentation OpenAPI générée depuis le code (Symfony 8 / PHP 8.4)",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/ping": {
+            "get": {
+                "tags": [
+                    "System"
+                ],
+                "summary": "Ping API Health Check",
+                "operationId": "e45aa589431b0de59a81022e6caf2c7c",
+                "responses": {
+                    "200": {
+                        "description": "API is healthy"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "System",
+            "description": "System"
+        }
+    ]
+}
