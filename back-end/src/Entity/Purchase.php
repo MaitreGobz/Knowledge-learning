@@ -3,12 +3,20 @@
 namespace App\Entity;
 
 use App\Repository\PurchaseRepository;
+use App\Entity\User;
+use App\Entity\Cursus;
+use App\Entity\Lesson;
+use App\Entity\Traits\TimestampableTrait;
+use App\Entity\Traits\BlameableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PurchaseRepository::class)]
 #[ORM\Table(name: 'purchases')]
 class Purchase
 {
+    use TimestampableTrait;
+    use BlameableTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -39,19 +47,6 @@ class Purchase
 
     #[ORM\Column(name: 'stripe_session_id', length: 255, nullable: true, unique: true)]
     private ?string $stripeSessionId = null;
-
-    //Audit fields
-    #[ORM\Column(name: 'created_at')]
-    private ?\DateTime $createdAt = null;
-
-    #[ORM\Column(name: 'updated_at')]
-    private ?\DateTime $updatedAt = null;
-
-    #[ORM\Column(name: 'created_by', nullable: true)]
-    private ?int $createdBy = null;
-
-    #[ORM\Column(name: 'updated_by', nullable: true)]
-    private ?int $updatedBy = null;
 
     public function getId(): ?int
     {
@@ -102,54 +97,6 @@ class Purchase
     public function setStripeSessionId(?string $stripeSessionId): static
     {
         $this->stripeSessionId = $stripeSessionId;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTime
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTime $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTime $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function getCreatedBy(): ?int
-    {
-        return $this->createdBy;
-    }
-
-    public function setCreatedBy(?int $createdBy): static
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    public function getUpdatedBy(): ?int
-    {
-        return $this->updatedBy;
-    }
-
-    public function setUpdatedBy(?int $updatedBy): static
-    {
-        $this->updatedBy = $updatedBy;
 
         return $this;
     }
