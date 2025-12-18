@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\Lessons;
+use App\Entity\Lesson;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Lessons>
+ * @extends ServiceEntityRepository<Lesson>
  */
-class LessonsRepository extends ServiceEntityRepository
+class LessonRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Lessons::class);
+        parent::__construct($registry, Lesson::class);
     }
 
     //    /**
-    //     * @return Lessons[] Returns an array of Lessons objects
+    //     * @return Lesson[] Returns an array of Lesson objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class LessonsRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Lessons
+    //    public function findOneBySomeField($value): ?Lesson
     //    {
     //        return $this->createQueryBuilder('l')
     //            ->andWhere('l.exampleField = :val')
