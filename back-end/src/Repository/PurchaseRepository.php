@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\Purchases;
+use App\Entity\Purchase;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Purchases>
+ * @extends ServiceEntityRepository<Purchase>
  */
-class PurchasesRepository extends ServiceEntityRepository
+class PurchaseRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Purchases::class);
+        parent::__construct($registry, Purchase::class);
     }
 
     //    /**
-    //     * @return Purchases[] Returns an array of Purchases objects
+    //     * @return Purchase[] Returns an array of Purchase objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class PurchasesRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Purchases
+    //    public function findOneBySomeField($value): ?Purchase
     //    {
     //        return $this->createQueryBuilder('p')
     //            ->andWhere('p.exampleField = :val')

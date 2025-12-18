@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\LessonValidations;
+use App\Entity\LessonValidation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<LessonValidations>
+ * @extends ServiceEntityRepository<LessonValidation>
  */
-class LessonValidationsRepository extends ServiceEntityRepository
+class LessonValidationRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, LessonValidations::class);
+        parent::__construct($registry, LessonValidation::class);
     }
 
     //    /**
-    //     * @return LessonValidations[] Returns an array of LessonValidations objects
+    //     * @return LessonValidation[] Returns an array of LessonValidation objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class LessonValidationsRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?LessonValidations
+    //    public function findOneBySomeField($value): ?LessonValidation
     //    {
     //        return $this->createQueryBuilder('l')
     //            ->andWhere('l.exampleField = :val')
