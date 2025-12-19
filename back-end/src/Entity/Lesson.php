@@ -15,7 +15,7 @@ class Lesson
 {
     use TimestampableTrait;
     use BlameableTrait;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -42,12 +42,23 @@ class Lesson
     #[ORM\Column]
     private ?int $price = null;
 
-    #[ORM\Column]
-    private ?bool $isActive = null;
+    #[ORM\Column(name: 'is_active', options: ['default' => true])]
+    private ?bool $isActive = true;
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getCursus(): ?Cursus
+    {
+        return $this->cursus;
+    }
+
+    public function setCursus(?Cursus $cursus): static
+    {
+        $this->cursus = $cursus;
+        return $this;
     }
 
     public function getTitle(): ?string
