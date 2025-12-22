@@ -13,6 +13,22 @@ trait TimestampableTrait
     #[ORM\Column(name: 'updated_at', type: 'datetime')]
     private ?\DateTime $updatedAt = null;
 
+    #[ORM\PrePersist]
+    public function onPrePersistTimestamps(): void
+    {
+        // When inserting for the first time, set both fields.
+        $now = new \DateTime();
+        $this->createdAt = $this->createdAt ?? $now;
+        $this->updatedAt = $now;
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdateTimestamps(): void
+    {
+        // On every update, refresh updatedAt only.
+        $this->updatedAt = new \DateTime();
+    }
+
     public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
