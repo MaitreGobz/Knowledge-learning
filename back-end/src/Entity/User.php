@@ -39,13 +39,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: 'is_verified', options: ['default' => false])]
     private ?bool $isVerified = false;
 
-    //Token 
-    #[ORM\Column(length: 64, nullable: true)]
-    private ?string $token = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?\DateTime $tokenExpiresAt = null;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -115,30 +108,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
-
-        return $this;
-    }
-
-    public function getToken(): ?string
-    {
-        return $this->token;
-    }
-
-    public function setToken(?string $token): static
-    {
-        $this->token = $token;
-
-        return $this;
-    }
-
-    public function getTokenExpiresAt(): ?\DateTime
-    {
-        return $this->tokenExpiresAt;
-    }
-
-    public function setTokenExpiresAt(?\DateTime $dt): static
-    {
-        $this->tokenExpiresAt = $dt;
 
         return $this;
     }
