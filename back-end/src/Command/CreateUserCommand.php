@@ -22,8 +22,7 @@ class CreateUserCommand extends Command
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly UserPasswordHasherInterface $passwordHasher,
-    )
-    {
+    ) {
         parent::__construct();
     }
 
@@ -67,14 +66,14 @@ class CreateUserCommand extends Command
         if (method_exists($user, 'setIsActive')) {
             $user->setIsActive(true);
         } elseif (method_exists($user, 'setActive')) {
-            $user->setActive(true);
+            $user->setIsActive(true);
         }
 
         // isVerified
         if (method_exists($user, 'setIsVerified')) {
             $user->setIsVerified(true);
         } elseif (method_exists($user, 'setVerified')) {
-            $user->setVerified(true);
+            $user->setIsVerified(true);
         }
 
         // created_at / updated_at

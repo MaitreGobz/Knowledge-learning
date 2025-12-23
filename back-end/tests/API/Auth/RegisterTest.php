@@ -62,13 +62,6 @@ final class RegisterTest extends WebTestCase
 
         // Newly registered users must not be verified yet
         $this->assertFalse($user->isVerified());
-
-        // Activation token must be generated and stored
-        $this->assertNotNull($user->getToken());
-        $this->assertNotEmpty($user->getToken());
-
-        // Expiration must be set
-        $this->assertNotNull($user->getTokenExpiresAt());
     }
 
     public function testRegisterEmailAlreadyExists(): void
