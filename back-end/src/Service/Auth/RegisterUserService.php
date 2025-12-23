@@ -5,7 +5,9 @@ namespace App\Service\Auth;
 use App\Dto\Auth\RegisterRequest;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class RegisterUserService
@@ -14,6 +16,7 @@ final class RegisterUserService
         private readonly UserRepository $userRepository,
         private readonly EntityManagerInterface $em,
         private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly EmailVerifier $emailVerifier,
     ) {}
 
     public function register(RegisterRequest $dto): User
@@ -33,13 +36,20 @@ final class RegisterUserService
         $hash = $this->passwordHasher->hashPassword($user, $dto->password);
         $user->setPassword($hash);
 
-        //Token 
-        $token = bin2hex(random_bytes(32));
-        $user->setToken($token);
-        $user->setTokenExpiresAt(new \DateTime('+12 hours'));
-
         $this->em->persist($user);
         $this->em->flush();
+
+        // Send signed verification email (Mailtrap will receive it)
+        $email = (new TemplatedEmail())
+            ->from('no-reply@knowledge-learning.local')
+            ->to($user->getEmail())
+            ->subject('Confirm your email')
+            ->htmlTemplate('/registration/verify_email.html.twig')
+            ->context([
+                'userEmail' => $user->getEmail(),
+            ]);
+
+        $this->emailVerifier->sendEmailConfirmation('api_auth_verify_email', $user, $email);
 
         return $user;
     }
