@@ -20,6 +20,7 @@ final class VerifyEmailController extends AbstractController
         operationId: 'authVerifyEmail',
         summary: 'Vérifier un compte via URL signée',
         description: 'Valide le compte utilisateur à partir d\'une URL signée envoyée par email.',
+        tags: ['Auth'],
         parameters: [
             new OA\Parameter(
                 name: 'id',

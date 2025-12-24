@@ -30,6 +30,7 @@ final class RegisterController extends AbstractController
         operationId: 'authRegister',
         summary: 'Inscription utilisateur',
         description: 'Créer un utilisateur avec le statut en attente de vérification (par email)',
+        tags: ['Auth'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
