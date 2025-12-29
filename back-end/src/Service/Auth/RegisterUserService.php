@@ -47,6 +47,7 @@ final class RegisterUserService
             ->htmlTemplate('/registration/verify_email.html.twig')
             ->context([
                 'userEmail' => $user->getEmail(),
+                'frontendUrl' => $_ENV['FRONTEND_URL'] ?? 'http://localhost:4200',
             ]);
 
         $this->emailVerifier->sendEmailConfirmation('api_auth_verify_email', $user, $email);

@@ -280,6 +280,50 @@
                     }
                 }
             }
+        },
+        "/api/themes": {
+            "get": {
+                "tags": [
+                    "Themes"
+                ],
+                "summary": "List all themes",
+                "description": "Returns the list of available themes ordered by name.",
+                "operationId": "45271caab549357f70bd147a1d176468",
+                "responses": {
+                    "200": {
+                        "description": "Themes successfully retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Fantasy"
+                                            },
+                                            "slug": {
+                                                "type": "string",
+                                                "example": "fantasy"
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "example": "Fantasy themed learning content",
+                                                "nullable": true
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -298,6 +342,10 @@
         {
             "name": "System",
             "description": "System"
+        },
+        {
+            "name": "Themes",
+            "description": "Themes"
         }
     ]
 }
