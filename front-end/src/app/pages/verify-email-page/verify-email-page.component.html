@@ -1,0 +1,32 @@
+<section class="container py-4 py-lg-5">
+    <h1 class="kl-title mb-3">Activation du compte</h1>
+
+    @if (isLoading) {
+    <div class="alert alert-info">
+        Vérification du lien en cours...
+    </div>
+    } @else {
+    @if (isSuccess) {
+    <div class="alert alert-success">
+        Votre compte a bien été activé. Vous pouvez maintenant vous connecter.
+    </div>
+
+    <a class="btn btn-primary" routerLink="/login">
+        Se connecter
+    </a>
+    } @else {
+    <div class="alert alert-danger">
+        {{ errorMessage }}
+    </div>
+
+    <a class="btn btn-outline-primary" routerLink="/register">
+        Retour à l'inscription
+    </a>
+
+    <a class="btn btn-link ms-2" routerLink="/login">
+        Se connecter
+    </a>
+    }
+    }
+</section>
+

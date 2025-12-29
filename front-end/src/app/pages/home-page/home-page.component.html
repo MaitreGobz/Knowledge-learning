@@ -1,13 +1,36 @@
-<div class="container py-5">
-    <h1 class="mb-4">Knowledge Learning</h1>
+<section class="container py-4 py-lg-5">
+    <!-- Title + intro -->
+    <h1 class="kl-title mb-3">Knowledge Learning</h1>
 
-    <button class="btn btn-primary me-2">
-        <i class="bi bi-house-door"></i>
-        Accueil
-    </button>
+    <p class="kl-intro mx-auto">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vestibulum quis pulvinar nisl.
+        Donec nec metus dolor. Praesent vehicula consequat diam ac aliquet.
+    </p>
 
-    <button class="btn btn-outline-secondary">
-        <i class="bi bi-person"></i>
-        Connexion
-    </button>
-</div>
+    <!-- Loading / Error -->
+    @if (isLoading) {
+    <div class="mt-4">Chargement des thèmes…</div>
+    } @else if (errorMessage) {
+    <div class="alert alert-danger mt-4">{{ errorMessage }}</div>
+    } @else {
+
+    <!-- Theme grid -->
+    <div class="row g-4 mt-4">
+        @for (theme of themes; track theme.id) {
+        <div class="col-12 col-lg-6">
+            <article class="kl-theme-card d-flex flex-column flex-md-row">
+                <img class="kl-theme-img" [src]="getThemeImage(theme)" [alt]="theme.title"
+                    (error)="onThemeImageError($event)" />
+                <div class="kl-theme-body">
+                    <h2 class="kl-theme-title">{{ theme.title }}</h2>
+                    <p class="kl-theme-text">
+                        {{ theme.description || 'Description à venir.' }}
+                    </p>
+                    <button class="btn kl-btn-access">Accéder</button>
+                </div>
+            </article>
+        </div>
+        }
+    </div>
+    }
+</section>

@@ -117,6 +117,7 @@ final class RegisterController extends AbstractController
             'id' => $user->getId(),
             'email' => $user->getEmail(),
             'status' => 'PENDING_VERIFICATION',
+            'message' => 'Utilisateur créé avec succès. Veuillez vérifier votre email pour activer votre compte.'
         ], 201);
     }
 
