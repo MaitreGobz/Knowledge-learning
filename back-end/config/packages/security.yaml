@@ -38,10 +38,11 @@ security:
     access_control:
         # Public endpoints
         - { path: ^/api/auth/register, roles: PUBLIC_ACCESS }
-        - { path: ^/api/auth/verify, roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth/verify-email, roles: PUBLIC_ACCESS }
         - { path: ^/api/auth/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/auth/csrf, roles: PUBLIC_ACCESS }
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
+        - { path: ^/api/themes, roles: PUBLIC_ACCESS }
         # Logout accessible if logged in
         - { path: ^/api/auth/logout, roles: IS_AUTHENTICATED_FULLY }
         # The rest of the API requires authentication
