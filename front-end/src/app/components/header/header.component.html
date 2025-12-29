@@ -1,0 +1,40 @@
+<header class="kl-header">
+    <nav class="navbar navbar-expand-lg container py-3">
+        <!-- Logo -->
+        <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/">
+            <img src="assets/images/logo.jfif" class="kl-logo" alt="image du logo" role="img">
+        </a>
+
+        <!-- Burger (tablet/mobile)-->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#klNav" aria-controls="klNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navigation links -->
+        <div class="collapse navbar-collapse" id="klNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-4">
+                <li class="nav-item">
+                    <a class="nav-link kl-navlink" routerLink="/" routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: true }">
+                        Accueil
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link kl-navlink" routerLink="/themes" routerLinkActive="active">
+                        Thèmes
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link kl-navlink" routerLink="/register" routerLinkActive="active">
+                        Inscription
+                    </a>
+                </li>
+                @if (isLoggedIn$ | async) {
+                <button class="btn btn-link kl-navlink" (click)="logout()">Se déconnecter</button>
+                } @else {
+                <a class="nav-link kl-navlink" routerLink="/login">Connexion</a>
+                }
+            </ul>
+        </div>
+    </nav>
+</header>

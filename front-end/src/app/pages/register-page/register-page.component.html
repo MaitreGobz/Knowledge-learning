@@ -1,1 +1,85 @@
-<p>register-page works!</p>
+
+<section class="kl-register-page container py-4 py-lg-5">
+    <!-- Title -->
+    <h1 class="kl-register-title text-center mb-4 mb-lg-5">Inscription</h1>
+
+    <!-- Global error -->
+    @if (globalError) {
+    <div class="row justify-content-center mb-3">
+        <div class="col-12 col-md-10 col-lg-8 col-xl-7">
+            <div class="alert alert-danger mb-0">{{ globalError }}</div>
+        </div>
+    </div>
+    }
+
+    <!-- Success (message from backend) -->
+    @if (success) {
+    <div class="row justify-content-center mb-3">
+        <div class="col-12 col-md-10 col-lg-8 col-xl-7">
+            <div class="alert alert-success mb-0">
+                {{ success.message }}
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- Card -->
+    <div class="row justify-content-center px-5">
+        <div class="col-12 col-md-10 col-lg-8 col-xl-7">
+            <form class="kl-register-card p-5" [formGroup]="form" (ngSubmit)="submit()">
+                <!-- Email -->
+                <div class="kl-field my-4">
+                    <label class="kl-label my-2" for="email">Email</label>
+                    <input id="email" type="email" class="form-control kl-input" formControlName="email"
+                        [class.is-invalid]="hasError('email') || (fieldErrors['email']?.length ?? 0) > 0"
+                        autocomplete="email" />
+
+                    @if (hasError('email')) {
+                    <div class="invalid-feedback d-block">
+                        @if (form.controls.email.errors?.['required']) { <div>Email obligatoire.</div> }
+                        @if (form.controls.email.errors?.['email']) { <div>Email invalide.</div> }
+                    </div>
+                    }
+
+                    @if (fieldErrors['email']?.length) {
+                    <div class="invalid-feedback d-block">
+                        @for (m of fieldErrors['email']; track $index) { <div>{{ m }}</div> }
+                    </div>
+                    }
+                </div>
+
+                <!-- Password -->
+                <div class="kl-field my-4">
+                    <label class="kl-label my-2" for="password">Mot de passe</label>
+                    <input id="password" type="password" class="form-control kl-input" formControlName="password"
+                        [class.is-invalid]="hasError('password') || (fieldErrors['password']?.length ?? 0) > 0"
+                        autocomplete="new-password" />
+
+                    @if (hasError('password')) {
+                    <div class="invalid-feedback d-block">
+                        @if (form.controls.password.errors?.['required']) { <div>Mot de passe obligatoire.</div> }
+                        @if (form.controls.password.errors?.['minlength']) { <div>Minimum 8 caractères.</div> }
+                    </div>
+                    }
+
+                    @if (fieldErrors['password']?.length) {
+                    <div class="invalid-feedback d-block">
+                        @for (m of fieldErrors['password']; track $index) { <div>{{ m }}</div> }
+                    </div>
+                    }
+                </div>
+
+                <!-- Submit -->
+                <div class="kl-actions text-center">
+                    <button class="btn kl-submit-btn" type="submit" [disabled]="isSubmitting">
+                        @if (isSubmitting) { <span>Inscription…</span> } @else { <span>S'inscrire</span> }
+                    </button>
+                </div>
+
+                <div class="text-center mt-3">
+                    <a routerLink="/login" class="kl-link">Déjà un compte ? Connexion</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

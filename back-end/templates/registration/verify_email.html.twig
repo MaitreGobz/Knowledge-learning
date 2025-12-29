@@ -10,7 +10,10 @@
     <p>Bonjour,</p>
     <p>Veuillez confirmer votre adresse e-mail en cliquant sur le lien ci-dessous :</p>
     
-    <p><a href="{{ signedUrl }}">Confirmer mon email</a></p>
+    <p>
+        {% set qs = signedUrl|split('?')|last %}
+        <a href="{{ frontendUrl|trim('/') ~ '/verify-email?' ~ qs }}">Confirmer mon email</a>
+    </p>
     
     <p>Ce lien expirera bientôt.</p>
 </body>
