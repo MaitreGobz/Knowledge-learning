@@ -16,6 +16,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 final class UserAdminController extends AbstractController
 {
+    // --- READ ---
+    // - List users
+    // - Detail user
     #[Route('/api/admin/users', name: 'api_admin_users_list', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
     #[OA\Get(
@@ -48,7 +51,7 @@ final class UserAdminController extends AbstractController
                             new OA\Property(property: 'id', type: 'integer', example: 1),
                             new OA\Property(property: 'email', type: 'string', example: 'admin@example.com'),
                             new OA\Property(property: 'isVerified', type: 'boolean', example: true),
-                            new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
+                            new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', example: '2025-12-30T10:00:00+00:00'),
                         ]
                     )
                 ),
@@ -139,6 +142,62 @@ final class UserAdminController extends AbstractController
                 'sort' => $sort,
                 'order' => $order,
             ]
+        ]);
+    }
+
+    #[Route('/api/admin/users/{id}', name: 'api_admin_users_detail', methods: ['GET'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_ADMIN')]
+    #[OA\Get(
+        path: '/api/admin/users/{id}',
+        summary: "Détail d'un utilisateur (admin)",
+        tags: ['Admin - Users']
+    )]
+    #[OA\Parameter(
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: "Identifiant de l'utilisateur",
+        schema: new OA\Schema(type: 'integer', minimum: 1, example: 1)
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Détail utilisateur",
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'id', type: 'integer', example: 1),
+                new OA\Property(property: 'email', type: 'string', example: 'user@example.com'),
+                new OA\Property(property: 'roles', type: 'array', items: new OA\Items(type: 'string'), example: ['ROLE_USER']),
+                new OA\Property(property: 'isVerified', type: 'boolean', example: true),
+                new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', example: '2025-12-30T10:00:00+00:00'),
+            ]
+        )
+    )]
+    #[OA\Response(response: 401, description: 'Non authentifié')]
+    #[OA\Response(response: 403, description: 'Accès interdit (ROLE_ADMIN requis)')]
+    #[OA\Response(
+        response: 404,
+        description: "Utilisateur introuvable",
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'message', type: 'string', example: 'User not found.'),
+            ]
+        )
+    )]
+    public function detailUser(int $id, UserRepository $users): JsonResponse
+    {
+        $user = $users->find($id);
+
+        if ($user === null) {
+            return $this->json(['message' => 'User not found.'], 404);
+        }
+        return $this->json([
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'roles' => $user->getRoles(),
+            'isVerified' => $user->isVerified(),
+            'createdAt' => $user->getCreatedAt()?->format(\DateTimeInterface::ATOM),
         ]);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Api\Admin;
+namespace App\Tests\API\Admin;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
- * Tests for the UserAdminController API endpoints
+ * Tests for the UserAdminController List API endpoint
  */
 final class UserAdminContollerTest extends WebTestCase
 {
@@ -65,7 +65,7 @@ final class UserAdminContollerTest extends WebTestCase
      * Ensures that an authenticated admin user can access
      * the admin users listing endpoint.
      */
-    public function test_admin_can_list_users(): void
+    public function testAdminCanListUsers(): void
     {
         $client = static::createClient();
         $container = static::getContainer();
@@ -106,7 +106,7 @@ final class UserAdminContollerTest extends WebTestCase
      * Ensures that an authenticated non-admin user
      * cannot access the admin users listing endpoint.
      */
-    public function test_user_cannot_list_users(): void
+    public function testUserCannotListUsers(): void
     {
         $client = static::createClient();
         $container = static::getContainer();
@@ -131,7 +131,7 @@ final class UserAdminContollerTest extends WebTestCase
      * Ensures that an anonymous (unauthenticated) user
      * cannot access the admin users listing endpoint.
      */
-    public function test_anonymous_cannot_list_users(): void
+    public function testAnonymousCannotListUsers(): void
     {
         $client = static::createClient();
         $container = static::getContainer();
