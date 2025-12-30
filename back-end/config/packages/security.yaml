@@ -15,10 +15,13 @@ security:
             # Ensure dev tools and static assets are always allowed
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
-        main:
+        api:
+            pattern: ^/api
             lazy: true
             provider: app_user_provider
             user_checker: App\Security\UserChecker
+            stateless: false
+            context: api
             # Connection via JSON (session cookie)
             json_login:
                 check_path: /api/auth/login
@@ -43,8 +46,13 @@ security:
         - { path: ^/api/auth/csrf, roles: PUBLIC_ACCESS }
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/api/themes, roles: PUBLIC_ACCESS }
+
         # Logout accessible if logged in
         - { path: ^/api/auth/logout, roles: IS_AUTHENTICATED_FULLY }
+
+        # Back-office endpoints (admin only)
+        - { path: ^/api/admin, roles: ROLE_ADMIN }
+
         # The rest of the API requires authentication
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
