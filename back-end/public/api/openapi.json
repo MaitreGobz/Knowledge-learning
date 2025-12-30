@@ -149,6 +149,90 @@
                 }
             }
         },
+        "/api/admin/users/{id}": {
+            "get": {
+                "tags": [
+                    "Admin - Users"
+                ],
+                "summary": "Détail d'un utilisateur (admin)",
+                "operationId": "c5eec80d31dadb3c620de891450140ce",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Identifiant de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détail utilisateur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "user@example.com"
+                                        },
+                                        "roles": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "example": [
+                                                "ROLE_USER"
+                                            ]
+                                        },
+                                        "isVerified": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "createdAt": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2025-12-30T10:00:00+00:00"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "403": {
+                        "description": "Accès interdit (ROLE_ADMIN requis)"
+                    },
+                    "404": {
+                        "description": "Utilisateur introuvable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth/csrf": {
             "get": {
                 "tags": [
