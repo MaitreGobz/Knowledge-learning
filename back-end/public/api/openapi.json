@@ -6,6 +6,149 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/admin/users": {
+            "get": {
+                "tags": [
+                    "Admin - Users"
+                ],
+                "summary": "Lister les utilisateurs (admin)",
+                "operationId": "38fc21a8ed5a06623d2ff0015eb44162",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "createdAt"
+                        }
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "desc",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "isVerified",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée des utilisateurs",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "example": "admin@example.com"
+                                                    },
+                                                    "isVerified": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    },
+                                                    "createdAt": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "limit": {
+                                                    "type": "integer",
+                                                    "example": 20
+                                                },
+                                                "totalItems": {
+                                                    "type": "integer",
+                                                    "example": 42
+                                                },
+                                                "totalPages": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "sort": {
+                                                    "type": "string",
+                                                    "example": "createdAt"
+                                                },
+                                                "order": {
+                                                    "type": "string",
+                                                    "example": "desc"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "403": {
+                        "description": "Accès interdit (ROLE_ADMIN requis)"
+                    }
+                }
+            }
+        },
         "/api/auth/csrf": {
             "get": {
                 "tags": [
@@ -77,6 +220,50 @@
                     },
                     "403": {
                         "description": "Email non vérifié"
+                    }
+                }
+            }
+        },
+        "/api/auth/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Récupérer les informations de l'utilisateur connecté",
+                "description": "Retourne les informations de l'utilisateur connecté.",
+                "operationId": "dfa78f9200b5f21a56fef2db5f23a877",
+                "responses": {
+                    "200": {
+                        "description": "Informations de l'utilisateur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "id",
+                                        "email",
+                                        "roles"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "email": {
+                                            "type": "string"
+                                        },
+                                        "roles": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
                     }
                 }
             }
@@ -302,7 +489,7 @@
                                                 "type": "integer",
                                                 "example": 1
                                             },
-                                            "name": {
+                                            "title": {
                                                 "type": "string",
                                                 "example": "Fantasy"
                                             },
@@ -338,6 +525,10 @@
     "tags": [
         {
             "name": "Auth"
+        },
+        {
+            "name": "Admin - Users",
+            "description": "Admin - Users"
         },
         {
             "name": "System",
