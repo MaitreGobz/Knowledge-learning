@@ -137,7 +137,6 @@ final class RegisterController extends AbstractController
     {
         $errors = [];
 
-        /** @var ConstraintViolationInterface $v */
         foreach ($violations as $v) {
             $field = (string) $v->getPropertyPath();
             $message = (string) $v->getMessage();
