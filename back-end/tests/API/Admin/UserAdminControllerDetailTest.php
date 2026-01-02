@@ -12,6 +12,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
  */
 final class UserAdminControllerDetailTest extends WebTestCase
 {
+    // Endpoint URL for user details
     private const DETAIL_URL_TEMPLATE = '/api/admin/users/%d';
 
     // Doctrine EntityManager used to persist and clean test data
@@ -77,7 +78,7 @@ final class UserAdminControllerDetailTest extends WebTestCase
         $this->createUser('admin@test.com', 'Admin123!', ['ROLE_ADMIN']);
         $target = $this->createUser('user@test.com', 'User123!', ['ROLE_USER']);
 
-        // Authenticate as admin via REAL login endpoint
+        // Authenticate as admin
         $this->login($client, 'admin@test.com', 'Admin123!');
 
         // Call the detail endpoint
@@ -173,6 +174,7 @@ final class UserAdminControllerDetailTest extends WebTestCase
 
         $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
 
+        // Create admin
         $this->createUser('admin@test.com', 'Admin123!', ['ROLE_ADMIN']);
 
         // Authenticate as admin
