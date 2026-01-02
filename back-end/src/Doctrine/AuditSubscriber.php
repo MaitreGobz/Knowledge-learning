@@ -4,7 +4,7 @@ namespace App\Doctrine;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Symfony\Bundle\SecurityBundle\Security;
 
@@ -17,24 +17,15 @@ class AuditSubscriber implements EventSubscriber
         return [Events::prePersist, Events::preUpdate];
     }
 
-    public function prePersist(LifecycleEventArgs $args): void
+    public function prePersist(PrePersistEventArgs $args): void
     {
         // Retrieves the object (entity) that is being persisted
         $entity = $args->getObject();
-        //Create a DateTime object that will be used for createdAt and updatedAt
-        $now = new \DateTime();
         //Retrieves the “author”: email address of the logged-in user if available, otherwise null
-        $author = $this->getActorEmail();
+        $author = $this->getAuthorEmail();
 
-        // Sets the createdAt and updatedAt fields if the entity has the corresponding methods
-        if (method_exists($entity, 'getCreatedAt') && method_exists($entity, 'setCreatedAt')) {
-            if ($entity->getCreatedAt() === null) {
-                $entity->setCreatedAt($now);
-            }
-        }
-
-        if (method_exists($entity, 'setUpdatedAt')) {
-            $entity->setUpdatedAt($now);
+        if ($author === null) {
+            return;
         }
 
         // Sets the createdBy and updatedBy fields if the entity has the corresponding methods
@@ -50,23 +41,20 @@ class AuditSubscriber implements EventSubscriber
     }
 
     public function preUpdate(PreUpdateEventArgs $args): void
-    {   
+    {
         // Retrieves the object (entity) that is being updated
         $entity = $args->getObject();
-        // Create a DateTime object that will be used for updatedAt
-        $now = new \DateTime();
         // Retrieves the “author”: email address of the logged-in user if available, otherwise null
-        $author = $this->getActorEmail();
-        
-        // Sets the updatedAt and updatedBy fields if the entity has the corresponding methods
-        if (method_exists($entity, 'setUpdatedAt')) {
-            $entity->setUpdatedAt($now);
+        $author = $this->getAuthorEmail();
+
+        if ($author === null) {
+            return;
         }
 
         if (method_exists($entity, 'setUpdatedBy')) {
             $entity->setUpdatedBy($author);
         }
-        
+
         // Recompute the change set to ensure Doctrine is aware of the changes
         $em = $args->getObjectManager();
         $meta = $em->getClassMetadata(get_class($entity));
