@@ -17,12 +17,12 @@ final class ThemeController extends AbstractController
     #[OA\Get(
         path: '/api/themes',
         summary: 'List all themes',
-        description: 'Returns the list of available themes ordered by name.',
+        description: 'Retourne la liste des thèmes disponibles ordonnés par nom.',
         tags: ['Themes'],
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Themes successfully retrieved',
+                description: 'Thèmes récupérés avec succès',
                 content: new OA\JsonContent(
                     type: 'array',
                     items: new OA\Items(
@@ -35,7 +35,7 @@ final class ThemeController extends AbstractController
                                 property: 'description',
                                 type: 'string',
                                 nullable: true,
-                                example: 'Fantasy themed learning content'
+                                example: 'Contenu d\'apprentissage sur le thème de la fantasy'
                             ),
                         ]
                     )

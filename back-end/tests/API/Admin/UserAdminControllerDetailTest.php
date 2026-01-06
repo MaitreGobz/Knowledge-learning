@@ -92,10 +92,9 @@ final class UserAdminControllerDetailTest extends WebTestCase
 
         $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-        // Validate response shape (align with your controller output)
+        // Validate response structure
         $this->assertSame($target->getId(), $data['id']);
         $this->assertSame('user@test.com', $data['email']);
-
         $this->assertArrayHasKey('roles', $data);
         $this->assertArrayHasKey('isVerified', $data);
         $this->assertArrayHasKey('createdAt', $data);
@@ -121,7 +120,7 @@ final class UserAdminControllerDetailTest extends WebTestCase
         // Create admin + user + target
         $this->createUser('admin@test.com', 'Admin123!', ['ROLE_ADMIN']);
         $this->createUser('user1@test.com', 'User123!', ['ROLE_USER']);
-        $target = $this->createUser('user2@test.com', 'User123!', ['ROLE_USER']);
+        $target = $this->createUser('target@test.com', 'User123!', ['ROLE_USER']);
 
         // Authenticate as regular user
         $this->login($client, 'user1@test.com', 'User123!');

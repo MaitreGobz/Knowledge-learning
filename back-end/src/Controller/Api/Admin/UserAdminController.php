@@ -4,7 +4,8 @@ namespace App\Controller\Api\Admin;
 
 use OpenApi\Attributes as OA;
 use App\Entity\User;
-use App\Dto\Admin\UserAdminRequest;
+use App\Dto\Admin\UserAdminCreateRequest;
+use App\Dto\Admin\UserAdminUpdateRequest;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -188,7 +189,7 @@ final class UserAdminController extends AbstractController
         content: new OA\JsonContent(
             type: 'object',
             properties: [
-                new OA\Property(property: 'message', type: 'string', example: 'User not found.'),
+                new OA\Property(property: 'message', type: 'string', example: 'Utilisateur introuvable.'),
             ]
         )
     )]
@@ -221,7 +222,7 @@ final class UserAdminController extends AbstractController
         name: 'X-CSRF-TOKEN',
         in: 'header',
         required: true,
-        description: 'Token CSRF requis (session cookie). CSRF id: admin_create_user',
+        description: 'Token CSRF requis (session cookie). CSRF id: auth',
         schema: new OA\Schema(type: 'string')
     )]
     #[OA\RequestBody(
@@ -265,7 +266,7 @@ final class UserAdminController extends AbstractController
         content: new OA\JsonContent(
             type: 'object',
             properties: [
-                new OA\Property(property: 'message', type: 'string', example: 'Invalid JSON.'),
+                new OA\Property(property: 'message', type: 'string', example: 'JSON invalide.'),
             ]
         )
     )]
@@ -277,7 +278,7 @@ final class UserAdminController extends AbstractController
         content: new OA\JsonContent(
             type: 'object',
             properties: [
-                new OA\Property(property: 'message', type: 'string', example: 'Email already exists.'),
+                new OA\Property(property: 'message', type: 'string', example: 'Email déjà existant.'),
             ]
         )
     )]
@@ -287,12 +288,12 @@ final class UserAdminController extends AbstractController
         content: new OA\JsonContent(
             type: 'object',
             properties: [
-                new OA\Property(property: 'message', type: 'string', example: 'Validation failed.'),
+                new OA\Property(property: 'message', type: 'string', example: 'Validation échouée.'),
                 new OA\Property(
                     property: 'errors',
                     type: 'object',
                     additionalProperties: true,
-                    example: ['password' => 'Password is too weak.']
+                    example: ['password' => 'Le mot de passe est trop faible.']
                 )
             ]
         )
@@ -312,7 +313,7 @@ final class UserAdminController extends AbstractController
         // CSRF token validation (enabled in prod/dev, bypassed in test)
         if ($this->getParameter('kernel.environment') !== 'test') {
             $csrfValue = (string) $request->headers->get('X-CSRF-TOKEN', '');
-            if ($csrfValue === '' || !$csrfTokenManager->isTokenValid(new CsrfToken('admin_create_user', $csrfValue))) {
+            if ($csrfValue === '' || !$csrfTokenManager->isTokenValid(new CsrfToken('auth', $csrfValue))) {
                 return $this->json(['message' => 'Invalid CSRF token.'], 403);
             }
         }
@@ -324,10 +325,10 @@ final class UserAdminController extends AbstractController
         }
 
         // Hydrate and normalize DTO
-        $input = new UserAdminRequest();
-        $input->email = isset($data['email']) ? (string) $data['email'] : null;
-        $input->password = isset($data['password']) ? (string) $data['password'] : null;
-        $input->roles = $data['roles'] ?? null;
+        $input = new UserAdminCreateRequest();
+        $input->email = array_key_exists('email', $data) ? (is_string($data['email']) ? (string) $data['email'] : null) : null;
+        $input->password = array_key_exists('password', $data) ? (is_string($data['password']) ? (string) $data['password'] : null) : null;
+        $input->roles = array_key_exists('roles', $data) ? $data['roles'] : null;
         $input->isActive = array_key_exists('isActive', $data) ? (bool) $data['isActive'] : null;
         $input->isVerified = array_key_exists('isVerified', $data) ? (bool) $data['isVerified'] : null;
         $input->normalize();
@@ -361,10 +362,10 @@ final class UserAdminController extends AbstractController
         $user = new User();
         $user->setEmail($input->email);
 
-        if (is_array($input->roles) && $input->roles !== []) {
-            $user->setRoles(array_values(array_unique(array_map('strval', $input->roles))));
-        } else {
-            $user->setRoles([]);
+        if ($input->roles !== null) {
+            $user->setRoles([
+                (string) $input->roles[0]
+            ]);
         }
 
         $user->setIsActive((bool) $input->isActive);
@@ -377,6 +378,7 @@ final class UserAdminController extends AbstractController
 
         // Successful creation response
         return $this->json([
+            'message' => 'Utilisateur créé avec succès.',
             'id' => $user->getId(),
             'email' => $user->getEmail(),
             'roles' => $user->getRoles(),
@@ -385,5 +387,214 @@ final class UserAdminController extends AbstractController
             'createdAt' => $user->getCreatedAt()?->format(\DateTimeInterface::ATOM),
             'updatedAt' => $user->getUpdatedAt()?->format(\DateTimeInterface::ATOM),
         ], 201);
+    }
+
+    // --- UPDATE ---
+    // - Update user
+    #[Route('/api/admin/users/{id}', name: 'api_admin_users_update', methods: ['PATCH'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_ADMIN')]
+    #[OA\Patch(
+        path: '/api/admin/users/{id}',
+        summary: "Mettre à jour un utilisateur (admin)",
+        tags: ['Admin - Users']
+    )]
+    #[OA\Parameter(
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: "Identifiant de l'utilisateur",
+        schema: new OA\Schema(type: 'integer', minimum: 1, example: 1)
+    )]
+    #[OA\Parameter(
+        name: 'X-CSRF-TOKEN',
+        in: 'header',
+        required: true,
+        description: 'Token CSRF requis (session cookie). CSRF id: auth',
+        schema: new OA\Schema(type: 'string')
+    )]
+    #[OA\RequestBody(
+        required: false,
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'email', type: 'string', example: 'updated.email@test.com'),
+                new OA\Property(property: 'password', type: 'string', example: 'NewPassword!'),
+                new OA\Property(
+                    property: 'roles',
+                    type: 'array',
+                    items: new OA\Items(type: 'string'),
+                    example: ['ROLE_USER', 'ROLE_ADMIN']
+                ),
+                new OA\Property(property: 'isActive', type: 'boolean', example: true),
+                new OA\Property(property: 'isVerified', type: 'boolean', example: true),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Utilisateur mis à jour',
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'id', type: 'integer', example: 1),
+                new OA\Property(property: 'email', type: 'string', example: 'updated.email@test.com'),
+                new OA\Property(
+                    property: 'roles',
+                    type: 'array',
+                    items: new OA\Items(type: 'string'),
+                    example: ['ROLE_ADMIN']
+                ),
+                new OA\Property(property: 'isActive', type: 'boolean', example: true),
+                new OA\Property(property: 'isVerified', type: 'boolean', example: true),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 400,
+        description: "Requête invalide (JSON)",
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'message', type: 'string', example: 'JSON invalide.'),
+            ]
+        )
+
+    )]
+    #[OA\Response(response: 401, description: 'Non authentifié')]
+    #[OA\Response(response: 403, description: 'Accès interdit (ROLE_ADMIN requis) ou CSRF invalide')]
+    #[OA\Response(
+        response: 404,
+        description: "Utilisateur introuvable",
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'message', type: 'string', example: 'Utilisateur introuvable.'),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 409,
+        description: 'Email déjà utilisé',
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'message', type: 'string', example: 'Email déjà existant.'),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation échouée',
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'message', type: 'string', example: 'Validation échouée.'),
+                new OA\Property(
+                    property: 'errors',
+                    type: 'object',
+                    additionalProperties: true,
+                    example: ['password' => 'Le mot de passe est trop faible.']
+                )
+            ]
+        )
+    )]
+    /**
+     * Update an existing user
+     */
+    public function updateUser(
+        int $id,
+        Request $request,
+        UserRepository $users,
+        EntityManagerInterface $em,
+        UserPasswordHasherInterface $hasher,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        ValidatorInterface $validator
+    ): JsonResponse {
+        // CSRF token validation (enabled in prod/dev, bypassed in test)
+        if ($this->getParameter('kernel.environment') !== 'test') {
+            $csrfValue = (string) $request->headers->get('X-CSRF-TOKEN', '');
+            if ($csrfValue === '' || !$csrfTokenManager->isTokenValid(new CsrfToken('auth', $csrfValue))) {
+                return $this->json(['message' => 'Invalid CSRF token.'], 403);
+            }
+        }
+
+        // Find existing user
+        $user = $users->find($id);
+        if ($user === null) {
+            return $this->json(['message' => 'Utilisateur introuvable.'], 404);
+        }
+
+        // Decode and validate JSON payload
+        $data = json_decode($request->getContent(), true);
+        if (!is_array($data)) {
+            return $this->json(['message' => 'JSON invalide.'], 400);
+        }
+
+        // Hydrate and normalize DTO
+        $input = new UserAdminUpdateRequest();
+        $input->email = array_key_exists('email', $data) ? (is_string($data['email']) ? (string) $data['email'] : null) : null;
+        $input->password = array_key_exists('password', $data) ? (is_string($data['password']) ? (string) $data['password'] : null) : null;
+        $input->roles = array_key_exists('roles', $data) ? $data['roles'] : null;
+        $input->isActive = array_key_exists('isActive', $data) ? (bool) $data['isActive'] : null;
+        $input->isVerified = array_key_exists('isVerified', $data) ? (bool) $data['isVerified'] : null;
+        $input->normalize();
+
+        // Validate DTO
+        $violations = $validator->validate($input);
+        $errors = [];
+        foreach ($violations as $v) {
+            $field = (string) $v->getPropertyPath();
+            $errors[$field][] = $v->getMessage();
+        }
+
+        // Roles validation
+        $allowedRoles = ['ROLE_USER', 'ROLE_ADMIN'];
+        $rolesError = $input->validateRoles($allowedRoles);
+        if ($rolesError !== null) {
+            $errors['roles'][] = $rolesError;
+        }
+
+        if (!empty($errors)) {
+            return $this->json(['message' => 'Validation échouée.', 'errors' => $errors], 422);
+        }
+
+        // Unique email check
+        if ($input->email !== null) {
+            $existing = $users->findOneBy(['email' => $input->email]);
+            if ($existing !== null && $existing->getId() !== $user->getId()) {
+                return $this->json(['message' => 'Email déjà existant.'], 409);
+            }
+            $user->setEmail($input->email);
+        }
+
+        // Update user fields
+        if ($input->password !== null) {
+            $hashedPassword = $hasher->hashPassword($user, (string) $input->password);
+            $user->setPassword($hashedPassword);
+        }
+        if ($input->roles !== null) {
+            $user->setRoles([
+                (string) $input->roles[0]
+            ]);
+        }
+        if ($input->isActive !== null) {
+            $user->setIsActive($input->isActive);
+        }
+        if ($input->isVerified !== null) {
+            $user->setIsVerified($input->isVerified);
+        }
+
+        $em->flush();
+
+        return $this->json([
+            'message' => 'Utilisateur mis à jour avec succès.',
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'roles' => $user->getRoles(),
+            'isActive' => $user->isActive(),
+            'isVerified' => $user->isVerified(),
+            'createdAt' => $user->getCreatedAt()?->format(\DateTimeInterface::ATOM),
+            'updatedAt' => $user->getUpdatedAt()?->format(\DateTimeInterface::ATOM),
+        ], 200);
     }
 }

@@ -4,7 +4,10 @@ namespace App\Dto\Admin;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-final class UserAdminRequest
+/**
+ * DTO for creating a user via admin API
+ */
+final class UserAdminCreateRequest
 {
     #[Assert\NotBlank(message: 'Email requis.')]
     #[Assert\Email(message: 'Format d\'email invalide.')]
@@ -14,7 +17,13 @@ final class UserAdminRequest
     #[Assert\Length(min: 8, minMessage: 'Le mot de passe doit faire au moins 8 caractères.')]
     public ?string $password = null;
 
-    #[Assert\Type('array', message: 'Un seul rôle doit être choisi.')]
+    #[Assert\NotNull(message: 'Un rôle doit être fourni.')]
+    #[Assert\Count(
+        min: 1,
+        max: 1,
+        exactMessage: 'Un seul rôle doit être choisi.'
+    )]
+    #[Assert\Type('array', message: 'roles doit être un tableau.')]
     public ?array $roles = null;
 
     #[Assert\Type('bool')]
@@ -45,7 +54,7 @@ final class UserAdminRequest
         }
         foreach ($this->roles as $role) {
             if (!is_string($role) || !in_array($role, $allowedRoles, true)) {
-                return 'One or more roles are not allowed.';
+                return 'Un rôle doit être validé.';
             }
         }
         return null;
