@@ -8,12 +8,12 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
- * Tests for the UserAdminController create user endpoints.
+ * Tests for the UserAdminController update endpoint
  */
-final class UserAdminControllerCreateTest extends WebTestCase
+final class UserAdminControllerUpdateTest extends WebTestCase
 {
-    //Endpoint URL for creating users
-    private const CREATE_URL = '/api/admin/users';
+    //Endpoint URL for updating users
+    private const UPDATE_URL = '/api/admin/users';
 
     // Doctrine EntityManager used to persist and clean test data
     private EntityManagerInterface $em;
@@ -26,7 +26,7 @@ final class UserAdminControllerCreateTest extends WebTestCase
     }
 
     /**
-     * Creates and persists a User entity for testing purposes.
+     * Creates and persists a User entity for testing.
      */
     private function createUser(string $email, string $plainPassword, array $roles): User
     {
@@ -61,9 +61,9 @@ final class UserAdminControllerCreateTest extends WebTestCase
     }
 
     /**
-     * Ensure that an authenticated admin user can create a new user.
+     * Ensure that an authenticated admin user can update a user.
      */
-    public function testAdminCanCreateUser(): void
+    public function testAdminCanUpdateUser(): void
     {
         $client = static::createClient();
         $container = static::getContainer();
@@ -73,56 +73,49 @@ final class UserAdminControllerCreateTest extends WebTestCase
 
         $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
 
-        // Create admin
+        // Create an admin + target user
         $this->createUser('admin@test.com', 'Admin123!', ['ROLE_ADMIN']);
+        $target = $this->createUser('user@test.com', 'User123!', ['ROLE_USER']);
 
         // Authenticate as admin
         $this->login($client, 'admin@test.com', 'Admin123!');
 
-        // Call create endpoint
+        // Call the update endpoint
         $client->request(
-            'POST',
-            self::CREATE_URL,
-            server: [
-                'CONTENT_TYPE' => 'application/json',
-                'HTTP_ACCEPT' => 'application/json',
-            ],
+            'PATCH',
+            self::UPDATE_URL . '/' . $target->getId(),
+            server: ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json'],
             content: json_encode([
-                'email' => 'new.user@test.com',
-                'password' => 'User123!',
-                'roles' => ['ROLE_USER']
-            ], JSON_THROW_ON_ERROR)
+                'email' => 'updated.email@test.com',
+                'roles' => ['ROLE_ADMIN'],
+                'isActive' => true,
+                'isVerified' => false,
+            ], JSON_THROW_ON_ERROR),
         );
-
-        $this->assertResponseStatusCodeSame(201);
+        $this->assertResponseStatusCodeSame(200);
 
         $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-        //Validate response structure
-        $this->assertArrayHasKey('id', $data);
-        $this->assertSame('new.user@test.com', $data['email']);
+        // Validate response structure
+        $this->assertSame($target->getId(), $data['id']);
+        $this->assertSame('updated.email@test.com', $data['email']);
         $this->assertArrayHasKey('roles', $data);
-        $this->assertArrayHasKey('isActive', $data);
-        $this->assertArrayHasKey('isVerified', $data);
+        $this->assertIsArray($data['roles']);
+        $this->assertContains('ROLE_ADMIN', $data['roles']);
+        $this->assertSame(true, $data['isActive']);
+        $this->assertSame(false, $data['isVerified']);
         $this->assertArrayHasKey('createdAt', $data);
         $this->assertArrayHasKey('updatedAt', $data);
 
         // Never expose password
         $this->assertArrayNotHasKey('password', $data);
         $this->assertArrayNotHasKey('hashedPassword', $data);
-
-        // Verify DB side
-        $repo = $this->em->getRepository(User::class);
-        $created = $repo->findOneBy(['email' => 'new.user@test.com']);
-        $this->assertNotNull($created);
-        $this->assertNotSame('StrongP@ssw0rd123!', $created->getPassword());
-        $this->assertTrue($created->isVerified());
     }
 
     /**
-     * Ensure that an authenticated non-admin user cannot create a new user.
+     * Ensure that an authenticated non-admin user cannot update a user.
      */
-    public function testUserCannotCreateUser(): void
+    public function testUserCannotUpdateUser(): void
     {
         $client = static::createClient();
         $container = static::getContainer();
@@ -132,33 +125,33 @@ final class UserAdminControllerCreateTest extends WebTestCase
 
         $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
 
-        // Create user (non-admin)
+        // Create a non-admin + target user
         $this->createUser('user@test.com', 'User123!', ['ROLE_USER']);
+        $target = $this->createUser('target@test.com', 'Target123!', ['ROLE_USER']);
 
         // Authenticate as regular user
         $this->login($client, 'user@test.com', 'User123!');
 
+        // Attempt to access admin endpoint
         $client->request(
-            'POST',
-            self::CREATE_URL,
+            'PATCH',
+            self::UPDATE_URL . '/' . $target->getId(),
             server: [
                 'CONTENT_TYPE' => 'application/json',
                 'HTTP_ACCEPT' => 'application/json',
             ],
             content: json_encode([
-                'email' => 'new.user@test.com',
-                'password' => 'StrongP@ssw0rd123!',
+                'email' => 'blocked@test.com',
+                'roles' => ['ROLE_USER'],
             ], JSON_THROW_ON_ERROR)
         );
-
-        // IsGranted must block
         $this->assertResponseStatusCodeSame(403);
     }
 
     /**
-     * Ensure that an anonymous user cannot create a new user.
+     *  Ensure that an anonymous user cannot update a user.
      */
-    public function testAnonymousCannotCreateUser(): void
+    public function testAnonymousCannotUpdateUser(): void
     {
         $client = static::createClient();
         $container = static::getContainer();
@@ -168,17 +161,19 @@ final class UserAdminControllerCreateTest extends WebTestCase
 
         $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
 
+        $target = $this->createUser('target@test.com', 'User123!', ['ROLE_USER']);
+
         // No authentication performed
         $client->request(
-            'POST',
-            self::CREATE_URL,
+            'PATCH',
+            self::UPDATE_URL . '/' . $target->getId(),
             server: [
                 'CONTENT_TYPE' => 'application/json',
                 'HTTP_ACCEPT' => 'application/json',
             ],
             content: json_encode([
-                'email' => 'new.user@test.com',
-                'password' => 'StrongP@ssw0rd123!',
+                'email' => 'nope@test.com',
+                'roles' => ['ROLE_USER'],
             ], JSON_THROW_ON_ERROR)
         );
 
@@ -186,7 +181,7 @@ final class UserAdminControllerCreateTest extends WebTestCase
     }
 
     /**
-     * Ensure that an authenticated admin user cannot create a new user with an emil already existing.
+     * Ensure that admin cannot update a user with an email already existing.
      */
     public function testAdminEmailAlreadyExists(): void
     {
@@ -202,21 +197,24 @@ final class UserAdminControllerCreateTest extends WebTestCase
         $this->createUser('admin@test.com', 'Admin123!', ['ROLE_ADMIN']);
 
         // Create existing user
+        $target = $this->createUser('target@test.com', 'User123!', ['ROLE_USER']);
+
+        // Create duplicate email user
         $this->createUser('dup@test.com', 'User123!', ['ROLE_USER']);
 
         // Authenticate as admin
         $this->login($client, 'admin@test.com', 'Admin123!');
 
         $client->request(
-            'POST',
-            self::CREATE_URL,
+            'PATCH',
+            self::UPDATE_URL . '/' . $target->getId(),
             server: [
                 'CONTENT_TYPE' => 'application/json',
                 'HTTP_ACCEPT' => 'application/json',
             ],
             content: json_encode([
                 'email' => 'dup@test.com',
-                'password' => 'StrongP@ssw0rd123!',
+                'roles' => ['ROLE_USER'],
             ], JSON_THROW_ON_ERROR)
         );
 
@@ -227,9 +225,9 @@ final class UserAdminControllerCreateTest extends WebTestCase
     }
 
     /**
-     * Ensure that an authenticated admin user gets validation errors when creating a new user with invalid data.
+     *  Ensure that admin gets validation errors when updating with invalid data.
      */
-    public function testAdminValidationError(): void
+    public function testAdminValidationErrors(): void
     {
         $client = static::createClient();
         $container = static::getContainer();
@@ -239,24 +237,25 @@ final class UserAdminControllerCreateTest extends WebTestCase
 
         $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
 
-        // Create admin
+        // Create admin + target user
         $this->createUser('admin@test.com', 'Admin123!', ['ROLE_ADMIN']);
+        $target = $this->createUser('target@test.com', 'User123!', ['ROLE_USER']);
 
         // Authenticate as admin
         $this->login($client, 'admin@test.com', 'Admin123!');
 
-        // Call create endpoint with invalid data
+        // Call the update endpoint with invalid data
         $client->request(
-            'POST',
-            self::CREATE_URL,
+            'PATCH',
+            self::UPDATE_URL . '/' . $target->getId(),
             server: [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_ACCEPT' => 'application/json',
+                'HTTP_ACCEPT' => 'application/json'
             ],
             content: json_encode([
-                'email' => 'bad@test.com',
-                'password' => 'weak',
-            ], JSON_THROW_ON_ERROR)
+                'email' => 'not-an-email',
+                'roles' => [],
+            ], JSON_THROW_ON_ERROR),
         );
 
         $this->assertResponseStatusCodeSame(422);
@@ -279,15 +278,16 @@ final class UserAdminControllerCreateTest extends WebTestCase
 
         $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
 
-        // Create admin
+        // Create admin + target user
         $this->createUser('admin@test.com', 'Admin123!', ['ROLE_ADMIN']);
+        $target = $this->createUser('target@test.com', 'User123!', ['ROLE_USER']);
 
         // Authenticate as admin
         $this->login($client, 'admin@test.com', 'Admin123!');
 
         $client->request(
-            'POST',
-            self::CREATE_URL,
+            'PATCH',
+            self::UPDATE_URL . '/' . $target->getId(),
             server: [
                 'CONTENT_TYPE' => 'application/json',
                 'HTTP_ACCEPT' => 'application/json',
@@ -298,6 +298,45 @@ final class UserAdminControllerCreateTest extends WebTestCase
         $this->assertResponseStatusCodeSame(400);
 
         $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $this->assertSame('Invalid JSON.', $data['message']);
+        $this->assertSame('JSON invalide.', $data['message']);
+    }
+
+    /**
+     * Ensure that admin receives 404 for a non-existing user id.
+     */
+    public function testShowUserNotFound(): void
+    {
+        $client = static::createClient();
+        $container = static::getContainer();
+
+        $this->em = $container->get(EntityManagerInterface::class);
+        $this->hasher = $container->get(UserPasswordHasherInterface::class);
+
+        $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
+
+        // Create admin
+        $this->createUser('admin@test.com', 'Admin123!', ['ROLE_ADMIN']);
+
+        // Authenticate as admin
+        $this->login($client, 'admin@test.com', 'Admin123!');
+
+        // Non-existing id
+        $client->request(
+            'PATCH',
+            self::UPDATE_URL . '/999999',
+            server: [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_ACCEPT' => 'application/json',
+            ],
+            content: json_encode([
+                'email' => 'new@test.com',
+                'roles' => ['ROLE_USER'],
+            ], JSON_THROW_ON_ERROR)
+        );
+
+        $this->assertResponseStatusCodeSame(404);
+
+        $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $this->assertSame('Utilisateur introuvable.', $data['message']);
     }
 }
