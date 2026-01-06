@@ -12,6 +12,7 @@
                     "Admin - Users"
                 ],
                 "summary": "Lister les utilisateurs (admin)",
+                "description": "List users with pagination, sorting, and filtering",
                 "operationId": "38fc21a8ed5a06623d2ff0015eb44162",
                 "parameters": [
                     {
@@ -99,7 +100,8 @@
                                                     },
                                                     "createdAt": {
                                                         "type": "string",
-                                                        "format": "date-time"
+                                                        "format": "date-time",
+                                                        "example": "2025-12-30T10:00:00+00:00"
                                                     }
                                                 },
                                                 "type": "object"
@@ -145,6 +147,176 @@
                     },
                     "403": {
                         "description": "Accès interdit (ROLE_ADMIN requis)"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Admin - Users"
+                ],
+                "summary": "Créer un utilisateur (admin)",
+                "description": "Create a new user",
+                "operationId": "0fd48cfbce49b76b31ff7bc1c1589e0b",
+                "parameters": [
+                    {
+                        "name": "X-CSRF-TOKEN",
+                        "in": "header",
+                        "description": "Token CSRF requis (session cookie). CSRF id: auth",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "new.user@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "P@ssw0rd123!"
+                                    },
+                                    "roles": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "example": [
+                                            "ROLE_USER"
+                                        ]
+                                    },
+                                    "isActive": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "isVerified": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Utilisateur créé",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 123
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "new.user@example.com"
+                                        },
+                                        "roles": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "example": [
+                                                "ROLE_USER"
+                                            ]
+                                        },
+                                        "isActive": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "isVerified": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "createdAt": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2025-12-31T12:00:00+00:00"
+                                        },
+                                        "updatedAt": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2025-12-31T12:00:00+00:00"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Requête invalide (JSON/Champs manquants)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JSON invalide."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "403": {
+                        "description": "Accès interdit (ROLE_ADMIN requis) ou CSRF invalide"
+                    },
+                    "409": {
+                        "description": "Email déjà utilisé",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email déjà existant."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation échouée",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation échouée."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "password": "Le mot de passe est trop faible."
+                                            },
+                                            "additionalProperties": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -222,7 +394,191 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "User not found."
+                                            "example": "Utilisateur introuvable."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Admin - Users"
+                ],
+                "summary": "Mettre à jour un utilisateur (admin)",
+                "description": "Update an existing user",
+                "operationId": "1091c1c505e0e790777b1781e3bd3d10",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Identifiant de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "X-CSRF-TOKEN",
+                        "in": "header",
+                        "description": "Token CSRF requis (session cookie). CSRF id: auth",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "updated.email@test.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "NewPassword!"
+                                    },
+                                    "roles": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "example": [
+                                            "ROLE_USER",
+                                            "ROLE_ADMIN"
+                                        ]
+                                    },
+                                    "isActive": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "isVerified": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Utilisateur mis à jour",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "updated.email@test.com"
+                                        },
+                                        "roles": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "example": [
+                                                "ROLE_ADMIN"
+                                            ]
+                                        },
+                                        "isActive": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "isVerified": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Requête invalide (JSON)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JSON invalide."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "403": {
+                        "description": "Accès interdit (ROLE_ADMIN requis) ou CSRF invalide"
+                    },
+                    "404": {
+                        "description": "Utilisateur introuvable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Utilisateur introuvable."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Email déjà utilisé",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email déjà existant."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation échouée",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation échouée."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "password": "Le mot de passe est trop faible."
+                                            },
+                                            "additionalProperties": true
                                         }
                                     },
                                     "type": "object"
@@ -558,11 +914,11 @@
                     "Themes"
                 ],
                 "summary": "List all themes",
-                "description": "Returns the list of available themes ordered by name.",
+                "description": "Retourne la liste des thèmes disponibles ordonnés par nom.",
                 "operationId": "45271caab549357f70bd147a1d176468",
                 "responses": {
                     "200": {
-                        "description": "Themes successfully retrieved",
+                        "description": "Thèmes récupérés avec succès",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -583,7 +939,7 @@
                                             },
                                             "description": {
                                                 "type": "string",
-                                                "example": "Fantasy themed learning content",
+                                                "example": "Contenu d'apprentissage sur le thème de la fantasy",
                                                 "nullable": true
                                             }
                                         },

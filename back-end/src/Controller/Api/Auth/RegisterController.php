@@ -4,13 +4,10 @@ namespace App\Controller\Api\Auth;
 
 use App\Dto\Auth\RegisterRequest;
 use App\Service\Auth\RegisterUserService;
-use Doctrine\ORM\Query\Expr\Func;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Console\Tests\Fixtures\DescriptorApplication1;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Mime\Encoder\ContentEncoderInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
