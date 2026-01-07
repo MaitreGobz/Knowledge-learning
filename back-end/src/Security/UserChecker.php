@@ -12,8 +12,14 @@ final class UserChecker implements UserCheckerInterface
 {
     public function checkPreAuth(UserInterface $user, ?TokenInterface $token = null): void
     {
+        // Only check User instances
         if (!$user instanceof User) {
             return;
+        }
+
+        // Check if the account is active and if the email is verified
+        if (!$user->isActive()) {
+            throw new CustomUserMessageAccountStatusException('Compte désactivé');
         }
         if (!$user->isVerified()) {
             throw new CustomUserMessageAccountStatusException('Email non vérifié');

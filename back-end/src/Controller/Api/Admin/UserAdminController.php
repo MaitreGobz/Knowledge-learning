@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -425,7 +426,6 @@ final class UserAdminController extends AbstractController
                     items: new OA\Items(type: 'string'),
                     example: ['ROLE_USER', 'ROLE_ADMIN']
                 ),
-                new OA\Property(property: 'isActive', type: 'boolean', example: true),
                 new OA\Property(property: 'isVerified', type: 'boolean', example: true),
             ]
         )
@@ -444,7 +444,6 @@ final class UserAdminController extends AbstractController
                     items: new OA\Items(type: 'string'),
                     example: ['ROLE_ADMIN']
                 ),
-                new OA\Property(property: 'isActive', type: 'boolean', example: true),
                 new OA\Property(property: 'isVerified', type: 'boolean', example: true),
             ]
         )
@@ -530,12 +529,18 @@ final class UserAdminController extends AbstractController
             return $this->json(['message' => 'JSON invalide.'], 400);
         }
 
+        // Prevent any modification of isActive via PATCH.
+        if (array_key_exists('isActive', $data)) {
+            return $this->json([
+                'message' => 'Champ "isActive" non modifiable via cette route. Utiliser DELETE /api/admin/users/{id}.'
+            ], 400);
+        }
+
         // Hydrate and normalize DTO
         $input = new UserAdminUpdateRequest();
         $input->email = array_key_exists('email', $data) ? (is_string($data['email']) ? (string) $data['email'] : null) : null;
         $input->password = array_key_exists('password', $data) ? (is_string($data['password']) ? (string) $data['password'] : null) : null;
         $input->roles = array_key_exists('roles', $data) ? $data['roles'] : null;
-        $input->isActive = array_key_exists('isActive', $data) ? (bool) $data['isActive'] : null;
         $input->isVerified = array_key_exists('isVerified', $data) ? (bool) $data['isVerified'] : null;
         $input->normalize();
 
@@ -577,9 +582,6 @@ final class UserAdminController extends AbstractController
                 (string) $input->roles[0]
             ]);
         }
-        if ($input->isActive !== null) {
-            $user->setIsActive($input->isActive);
-        }
         if ($input->isVerified !== null) {
             $user->setIsVerified($input->isVerified);
         }
@@ -596,5 +598,106 @@ final class UserAdminController extends AbstractController
             'createdAt' => $user->getCreatedAt()?->format(\DateTimeInterface::ATOM),
             'updatedAt' => $user->getUpdatedAt()?->format(\DateTimeInterface::ATOM),
         ], 200);
+    }
+
+    // --- DELETE ---
+    // - Delete user
+    #[Route('/api/admin/users/{id}', name: 'api_admin_users_delete', methods: ['DELETE'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_ADMIN')]
+    #[OA\Delete(
+        path: '/api/admin/users/{id}',
+        summary: "Supprimer un utilisateur (soft delete)",
+        description: "Suppression logique : met isActive=false. Ne supprime pas l'utilisateur de la base.",
+        tags: ['Admin - Users']
+    )]
+    #[OA\Parameter(
+        name: 'id',
+        in: 'path',
+        required: true,
+        description: "Identifiant de l'utilisateur",
+        schema: new OA\Schema(type: 'integer', minimum: 1, example: 1)
+    )]
+    #[OA\Parameter(
+        name: 'X-CSRF-TOKEN',
+        in: 'header',
+        required: true,
+        description: "Token CSRF requis (session cookie). CSRF id: auth",
+        schema: new OA\Schema(type: 'string')
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Utilisateur désactivé avec succès',
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'message', type: 'string', example: 'Compte désactivé'),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 404,
+        description: "Utilisateur introuvable",
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [new OA\Property(property: 'message', type: 'string', example: 'Utilisateur introuvable.')]
+        )
+    )]
+    #[OA\Response(
+        response: 403,
+        description: "Accès interdit (ROLE_ADMIN requis) ou CSRF invalide",
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [new OA\Property(property: 'message', type: 'string', example: 'Invalid CSRF token.')]
+        )
+    )]
+    #[OA\Response(
+        response: 409,
+        description: "Conflit (auto-suppression interdite)",
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [new OA\Property(property: 'message', type: 'string', example: 'Vous ne pouvez pas désactiver votre propre compte.')]
+        )
+    )]
+    /**
+     * Soft delete a user by setting isActive to false
+     */
+    public function deleteUser(
+        int $id,
+        Request $request,
+        UserRepository $users,
+        EntityManagerInterface $em,
+        CsrfTokenManagerInterface $csrfTokenManager
+    ): JsonResponse {
+
+        // CSRF token validation (enabled in prod/dev, bypassed in test)
+        if ($this->getParameter('kernel.environment') !== 'test') {
+            $csrfValue = (string) $request->headers->get('X-CSRF-TOKEN', '');
+            if ($csrfValue === '' || !$csrfTokenManager->isTokenValid(new CsrfToken('auth', $csrfValue))) {
+                return $this->json(['message' => 'Invalid CSRF token.'], 403);
+            }
+        }
+
+        // Find existing user
+        $user = $users->find($id);
+        if ($user === null) {
+            return $this->json(['message' => 'Utilisateur introuvable.'], 404);
+        }
+
+        // Prevent self-deactivation
+        $currentUser = $this->getUser();
+        if ($currentUser instanceof User && $currentUser->getId() === $user->getId()) {
+            return $this->json(['message' => 'Vous ne pouvez pas désactiver votre propre compte.'], 409);
+        }
+
+        // Soft delete by setting isActive to false
+        if ($user->isActive() === true) {
+            $user->setIsActive(false);
+            $em->flush();
+
+            return $this->json(['message' => 'Compte désactivé'], 200);
+        }
+
+        // If we reach here, the user is already inactive
+        return $this->json(['message' => 'Le compte est déjà désactivé'], 409);
     }
 }
