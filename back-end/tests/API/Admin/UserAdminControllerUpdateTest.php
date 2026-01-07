@@ -88,7 +88,6 @@ final class UserAdminControllerUpdateTest extends WebTestCase
             content: json_encode([
                 'email' => 'updated.email@test.com',
                 'roles' => ['ROLE_ADMIN'],
-                'isActive' => true,
                 'isVerified' => false,
             ], JSON_THROW_ON_ERROR),
         );
@@ -102,10 +101,14 @@ final class UserAdminControllerUpdateTest extends WebTestCase
         $this->assertArrayHasKey('roles', $data);
         $this->assertIsArray($data['roles']);
         $this->assertContains('ROLE_ADMIN', $data['roles']);
-        $this->assertSame(true, $data['isActive']);
         $this->assertSame(false, $data['isVerified']);
         $this->assertArrayHasKey('createdAt', $data);
         $this->assertArrayHasKey('updatedAt', $data);
+
+        // isActive must NOT be changed by PATCH
+        $this->em->clear();
+        $reloaded = $this->em->getRepository(User::class)->find($target->getId());
+        $this->assertTrue($reloaded->isActive());
 
         // Never expose password
         $this->assertArrayNotHasKey('password', $data);
