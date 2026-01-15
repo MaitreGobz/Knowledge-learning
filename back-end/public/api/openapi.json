@@ -37,28 +37,6 @@
                         }
                     },
                     {
-                        "name": "sort",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "default": "createdAt"
-                        }
-                    },
-                    {
-                        "name": "order",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string",
-                            "default": "desc",
-                            "enum": [
-                                "asc",
-                                "desc"
-                            ]
-                        }
-                    },
-                    {
                         "name": "email",
                         "in": "query",
                         "required": false,
@@ -124,14 +102,6 @@
                                                 "totalPages": {
                                                     "type": "integer",
                                                     "example": 3
-                                                },
-                                                "sort": {
-                                                    "type": "string",
-                                                    "example": "createdAt"
-                                                },
-                                                "order": {
-                                                    "type": "string",
-                                                    "example": "desc"
                                                 }
                                             },
                                             "type": "object"
@@ -404,6 +374,102 @@
                     }
                 }
             },
+            "delete": {
+                "tags": [
+                    "Admin - Users"
+                ],
+                "summary": "Supprimer un utilisateur (soft delete)",
+                "description": "Suppression logique : met isActive=false. Ne supprime pas l'utilisateur de la base.",
+                "operationId": "63b1b6bf709e27460b1b07ae2c2509f3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Identifiant de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "X-CSRF-TOKEN",
+                        "in": "header",
+                        "description": "Token CSRF requis (session cookie). CSRF id: auth",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Utilisateur désactivé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Compte désactivé"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Utilisateur introuvable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Utilisateur introuvable."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Accès interdit (ROLE_ADMIN requis) ou CSRF invalide",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Token CRSF invalide."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflit (auto-suppression interdite)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Vous ne pouvez pas désactiver votre propre compte."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "patch": {
                 "tags": [
                     "Admin - Users"
@@ -457,10 +523,6 @@
                                             "ROLE_ADMIN"
                                         ]
                                     },
-                                    "isActive": {
-                                        "type": "boolean",
-                                        "example": true
-                                    },
                                     "isVerified": {
                                         "type": "boolean",
                                         "example": true
@@ -494,10 +556,6 @@
                                             "example": [
                                                 "ROLE_ADMIN"
                                             ]
-                                        },
-                                        "isActive": {
-                                            "type": "boolean",
-                                            "example": true
                                         },
                                         "isVerified": {
                                             "type": "boolean",

@@ -29,6 +29,14 @@
                         Inscription
                     </a>
                 </li>
+                <!-- Back-office link (admins only) -->
+                @if (isAdmin$ | async) {
+                <li class="nav-item">
+                    <a class="nav-link kl-navlink" routerLink="/admin" routerLinkActive="active">
+                        Back-office
+                    </a>
+                </li>
+                }
                 @if (isLoggedIn$ | async) {
                 <button class="btn btn-link kl-navlink" (click)="logout()">Se déconnecter</button>
                 } @else {

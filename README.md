@@ -8,7 +8,7 @@ Le projet a été réalisé dans le cadre de ma formation de développeur web et
 
 - **Backend** : Symfony (API REST)
 - **Frontend** : Angular
-- **Base de données** : MySQL / MariaDB
+- **Base de données** : MySQL
 - **Paiement** : Stripe (mode sandbox)
 - **Emails** : Mailtrap (activation de compte)
 - **Authentification** : Symfony Security
@@ -166,7 +166,8 @@ Les tests couvrent notamment :
 - Achat de leçons ou de cursus
 - Validation des leçons
 - Certification automatique après validation complète d’un cursus
-- Backoffice administrateur
+- Backoffice administrateur (accessible uniquement avec ROLE_ADMIN):
+  Les requêtes modifiantes nécessitent un CSRF header
 
 ## Auteur
 

@@ -15,12 +15,13 @@ export class CsrfInterceptor implements HttpInterceptor {
         return next.handle(req);
         }
 
-        // If the request already contains a CSRF header, leave it untouched (useful for tests or special cases)
-        if (req.headers.has('X-CSRF-TOKEN')) {
-        return next.handle(req);
+        // If the request already contains a CSRF header, leave it untouched
+        const existing = req.headers.get('X-CSRF-TOKEN');
+        if (existing && existing !== 'csrf-token') {
+            return next.handle(req);
         }
 
-        // 3) For POST/PUT/PATCH/DELETE, we fetch the token and inject the header
+        // For POST/PUT/PATCH/DELETE, we fetch the token and inject the header
         return this.csrf.getCsrfToken().pipe(
             switchMap((token) => {
                 // Clone the request to add the new CSRF header

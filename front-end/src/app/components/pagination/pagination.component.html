@@ -1,0 +1,7 @@
+<div class="d-flex justify-content-center my-3">
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary" [disabled]="page <= 1" (click)="pageChange.emit(page - 1)"><<</button>
+        <div class="d-flex align-items-center">Page {{ page }} / {{ totalPages }}</div>
+        <button class="btn btn-primary" [disabled]="page >= totalPages" (click)="pageChange.emit(page + 1)">>></button>
+    </div>
+</div>
