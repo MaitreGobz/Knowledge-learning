@@ -38,8 +38,6 @@ final class UserAdminController extends AbstractController
 
     #[OA\Parameter(name: 'page', in: 'query', required: false, schema: new OA\Schema(type: 'integer', minimum: 1, default: 1))]
     #[OA\Parameter(name: 'limit', in: 'query', required: false, schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 100, default: 20))]
-    #[OA\Parameter(name: 'sort', in: 'query', required: false, schema: new OA\Schema(type: 'string', default: 'createdAt'))]
-    #[OA\Parameter(name: 'order', in: 'query', required: false, schema: new OA\Schema(type: 'string', enum: ['asc', 'desc'], default: 'desc'))]
     #[OA\Parameter(name: 'email', in: 'query', required: false, schema: new OA\Schema(type: 'string'))]
     #[OA\Parameter(name: 'isVerified', in: 'query', required: false, schema: new OA\Schema(type: 'boolean'))]
 
@@ -70,8 +68,6 @@ final class UserAdminController extends AbstractController
                         new OA\Property(property: 'limit', type: 'integer', example: 20),
                         new OA\Property(property: 'totalItems', type: 'integer', example: 42),
                         new OA\Property(property: 'totalPages', type: 'integer', example: 3),
-                        new OA\Property(property: 'sort', type: 'string', example: 'createdAt'),
-                        new OA\Property(property: 'order', type: 'string', example: 'desc'),
                     ]
                 ),
             ]
@@ -91,38 +87,7 @@ final class UserAdminController extends AbstractController
         // Prevent abusive queries
         $limit = min(100, max(1, $limit));
 
-        // Filters
-        $email = $request->query->get('email');
-        $isVerified = $request->query->get('isVerified');
-
-        // Sorting
-        $sort = (string) $request->query->get('sort', 'createdAt');
-        $order = strtolower((string) $request->query->get('order', 'desc'));
-        $allowedSort = ['id', 'email', 'createdAt', 'isVerified'];
-
-        if (!in_array($sort, $allowedSort, true)) {
-            return $this->json(['message' => 'Invalid sort field.'], 400);
-        }
-        if (!in_array($order, ['asc', 'desc'], true)) {
-            return $this->json(['message' => 'Invalid order value.'], 400);
-        }
-
-        // Normalized isVerified
-        $isVerifiedBool = null;
-        if ($isVerified !== null) {
-            $val = strtolower((string) $isVerified);
-            $isVerifiedBool = in_array($val, ['1', 'true', 'yes'], true) ? true : (in_array($val, ['0', 'false', 'no'], true) ? false : null);
-        }
-
-        // Fetch paginated users with filters
-        $paginator = $users->searchPaginated(
-            page: $page,
-            limit: $limit,
-            email: is_string($email) ? $email : null,
-            isVerified: $isVerifiedBool,
-            sort: $sort,
-            order: $order
-        );
+        $paginator = $users->listPaginated($page, $limit);
 
         // Total items depends on repository implementation
         $totalItems = count($paginator);
@@ -137,6 +102,9 @@ final class UserAdminController extends AbstractController
                 'roles' => $user->getRoles(),
                 'isVerified' => $user->isVerified(),
                 'createdAt' => $user->getCreatedAt()?->format(\DateTimeInterface::ATOM),
+                'createdBy' => $user->getCreatedBy(),
+                'updatedAt' => $user->getUpdatedAt()?->format(\DateTimeInterface::ATOM),
+                'updatedBy' => $user->getUpdatedBy(),
             ];
         }
 
@@ -148,8 +116,6 @@ final class UserAdminController extends AbstractController
                 'limit' => $limit,
                 'totalItems' => $totalItems,
                 'totalPages' => $totalPages,
-                'sort' => $sort,
-                'order' => $order,
             ]
         ]);
     }
@@ -315,7 +281,7 @@ final class UserAdminController extends AbstractController
         if ($this->getParameter('kernel.environment') !== 'test') {
             $csrfValue = (string) $request->headers->get('X-CSRF-TOKEN', '');
             if ($csrfValue === '' || !$csrfTokenManager->isTokenValid(new CsrfToken('auth', $csrfValue))) {
-                return $this->json(['message' => 'Invalid CSRF token.'], 403);
+                return $this->json(['message' => 'Token CRSF invalide.'], 403);
             }
         }
 
@@ -374,6 +340,12 @@ final class UserAdminController extends AbstractController
 
         $user->setPassword($hasher->hashPassword($user, (string) $input->password));
 
+        $author = $this->getUser();
+        $authorEmail = $author instanceof User ? $author->getEmail() : null;
+
+        $user->setCreatedBy($authorEmail);
+        $user->setUpdatedBy($authorEmail);
+
         $em->persist($user);
         $em->flush();
 
@@ -387,6 +359,8 @@ final class UserAdminController extends AbstractController
             'isVerified' => $user->isVerified(),
             'createdAt' => $user->getCreatedAt()?->format(\DateTimeInterface::ATOM),
             'updatedAt' => $user->getUpdatedAt()?->format(\DateTimeInterface::ATOM),
+            'createdBy' => $user->getCreatedBy(),
+            'updatedBy' => $user->getUpdatedBy(),
         ], 201);
     }
 
@@ -513,7 +487,7 @@ final class UserAdminController extends AbstractController
         if ($this->getParameter('kernel.environment') !== 'test') {
             $csrfValue = (string) $request->headers->get('X-CSRF-TOKEN', '');
             if ($csrfValue === '' || !$csrfTokenManager->isTokenValid(new CsrfToken('auth', $csrfValue))) {
-                return $this->json(['message' => 'Invalid CSRF token.'], 403);
+                return $this->json(['message' => 'Token CRSF invalide.'], 403);
             }
         }
 
@@ -586,6 +560,10 @@ final class UserAdminController extends AbstractController
             $user->setIsVerified($input->isVerified);
         }
 
+        $author = $this->getUser();
+        $authorEmail = $author instanceof User ? $author->getEmail() : null;
+        $user->setUpdatedBy($authorEmail);
+
         $em->flush();
 
         return $this->json([
@@ -597,6 +575,8 @@ final class UserAdminController extends AbstractController
             'isVerified' => $user->isVerified(),
             'createdAt' => $user->getCreatedAt()?->format(\DateTimeInterface::ATOM),
             'updatedAt' => $user->getUpdatedAt()?->format(\DateTimeInterface::ATOM),
+            'createdBy' => $user->getCreatedBy(),
+            'updatedBy' => $user->getUpdatedBy(),
         ], 200);
     }
 
@@ -647,7 +627,7 @@ final class UserAdminController extends AbstractController
         description: "Accès interdit (ROLE_ADMIN requis) ou CSRF invalide",
         content: new OA\JsonContent(
             type: 'object',
-            properties: [new OA\Property(property: 'message', type: 'string', example: 'Invalid CSRF token.')]
+            properties: [new OA\Property(property: 'message', type: 'string', example: 'Token CRSF invalide.')]
         )
     )]
     #[OA\Response(
@@ -673,7 +653,7 @@ final class UserAdminController extends AbstractController
         if ($this->getParameter('kernel.environment') !== 'test') {
             $csrfValue = (string) $request->headers->get('X-CSRF-TOKEN', '');
             if ($csrfValue === '' || !$csrfTokenManager->isTokenValid(new CsrfToken('auth', $csrfValue))) {
-                return $this->json(['message' => 'Invalid CSRF token.'], 403);
+                return $this->json(['message' => 'Token CRSF invalide.'], 403);
             }
         }
 
@@ -689,9 +669,14 @@ final class UserAdminController extends AbstractController
             return $this->json(['message' => 'Vous ne pouvez pas désactiver votre propre compte.'], 409);
         }
 
+
         // Soft delete by setting isActive to false
+        $author = $this->getUser();
+        $authorEmail = $author instanceof User ? $author->getEmail() : null;
+
         if ($user->isActive() === true) {
             $user->setIsActive(false);
+            $user->setUpdatedBy($authorEmail);
             $em->flush();
 
             return $this->json(['message' => 'Compte désactivé'], 200);

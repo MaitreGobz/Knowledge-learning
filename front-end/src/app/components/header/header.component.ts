@@ -3,6 +3,7 @@ import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AuthStateService } from '../../services/auth-state.service';
 import { AsyncPipe } from '@angular/common';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-header',
@@ -17,7 +18,13 @@ export class HeaderComponent {
   private authState = inject(AuthStateService);
   private router = inject(Router);
 
-  isLoggedIn$ = this.authState.isLoggedIn$;
+  // Expose observables to the template
+  readonly isLoggedIn$ = this.authState.isLoggedIn$;
+
+  // Admin is derived from user$ (no snapshot needed in the template)
+  readonly isAdmin$ = this.authState.user$.pipe(
+    map(user => !!user?.roles?.includes('ROLE_ADMIN'))
+  );
 
   logout(): void {
     this.auth.logout().subscribe({

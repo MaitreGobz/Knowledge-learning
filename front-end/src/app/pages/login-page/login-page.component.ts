@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { switchMap, finalize } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { AuthStateService } from '../../services/auth-state.service';
 
@@ -53,15 +54,23 @@ export class LoginPageComponent {
       password: this.form.value.password!
     };
 
-    this.auth.login(payload).subscribe({
-      next: () => {
-        // Login successful: stop loading and redirect to home page
+
+
+    this.auth.login(payload).pipe(
+      // After successful login, refresh the user state from /api/auth/me
+      switchMap(() => this.authState.refresh()),
+      // Always stop the loader (success or error)
+      finalize(() => {
         this.isLoading = false;
-        this.authState.refresh().subscribe(() => this.router.navigateByUrl('/'));
+      })
+    ).subscribe({
+      next: () => {
+        // userSnapshot is up-to-date after refresh()
+        const redirectUrl = this.authState.getPostLoginRedirectUrl();
+        this.router.navigateByUrl(redirectUrl);
       },
       error: (err: HttpErrorResponse) => {
-        // Login failed: stop loading and map the error to a user-friendly message
-        this.isLoading = false;
+        // Login failed: map the error to a user-friendly message
         this.errorMessage = this.mapLoginError(err);
       }
     });

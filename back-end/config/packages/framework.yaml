@@ -12,7 +12,7 @@ framework:
         cookie_samesite: lax
         name: KNOWLEDGESESSID
     csrf_protection:
-        stateless_token_ids: ["auth", "api"]
+        enabled: true
 
     #esi: true
     #fragments: true
