@@ -49,9 +49,7 @@ final class ThemeController extends AbstractController
         $themes = $themeRepository->findBy([], ['id' => 'ASC']);
 
         /**
-         * MVP choice:
-         * We manually map entity data to an array to ensure a stable,
-         * explicit and API-safe response structure.
+         * Transform the themes into an array suitable for JSON response.
          */
         $data = array_map(static function ($theme): array {
             return [

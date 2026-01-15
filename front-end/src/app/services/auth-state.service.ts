@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { MeResponse } from '../models/me.model';
 
@@ -56,5 +56,25 @@ export class AuthStateService {
     setLoggedOut(): void {
         this.isLoggedInSubject.next(false);
         this.userSubject.next(null);
+    }
+
+    /**
+     * Synchronous accessors (snapshots)
+     */
+    get userSnapshot(): AuthUser {
+        return this.userSubject.value;
+    }
+
+    get isLoggedInSnapshot(): boolean {
+        return this.isLoggedInSubject.value;
+    }
+
+    /**
+     * Return the post-login redirect URL based on user role.
+     */
+    getPostLoginRedirectUrl(): string {
+        const user = this.userSnapshot;
+        const isAdmin = !!user?.roles?.includes('ROLE_ADMIN');
+        return isAdmin ? '/admin' : '/';
     }
 }

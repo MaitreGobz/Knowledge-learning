@@ -10,9 +10,9 @@ import { environment } from '../environments/environment';
  * - params: query parameters (pagination, filters, etc.)
  * - responseType: useful for files (blob, text)
  */
-type ParamsValue = string | number | boolean;
 type HeadersRecord = Record<string, string | string[]>;
-type ParamsRecord = Record<string, ParamsValue | ParamsValue[]>;
+export type ParamsValue = string | number | boolean;
+export type ParamsRecord = Record<string, ParamsValue | ParamsValue[]>;
 
 export interface ApiOptions {
   headers?: HttpHeaders | HeadersRecord;
@@ -22,9 +22,7 @@ export interface ApiOptions {
   responseType?: 'json';
 };
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({providedIn: 'root'})
 export class ApiService {
   private http = inject(HttpClient);
 
@@ -33,16 +31,16 @@ export class ApiService {
   /**
    * Constructs a complete URL from an API endpoint.
    */
-   private buildUrl(path: string): string {
-  if (!path || path.trim().length === 0) {
-    throw new Error('ApiService: path is required');
+  private buildUrl(path: string): string {
+    if (!path || path.trim().length === 0) {
+      throw new Error('ApiService: path is required');
+    }
+
+    const base = this.apiBaseUrl.replace(/\/+$/, '');
+    const endpoint = path.startsWith('/') ? path : `/${path}`;
+
+    return `${base}${endpoint}`;
   }
-
-  const base = this.apiBaseUrl.replace(/\/+$/, '');
-  const endpoint = path.startsWith('/') ? path : `/${path}`;
-
-  return `${base}${endpoint}`;
-}
   
   /**
    * Force the sending of Symfony session cookies

@@ -1,0 +1,53 @@
+<div class="user-table table-responsive">
+    <table class="table table-bordered table-hover align-middle mb-0">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Email</th>
+                <th scope="col" class="text-nowrap">Rôle</th>
+                <th scope="col" class="text-nowrap">Vérifié</th>
+                <th scope="col" class="text-nowrap">Créé le</th>
+                <th scope="col" class="text-nowrap d-none d-lg-table-cell">Créé par</th>
+                <th scope="col" class="text-nowrap d-none d-md-table-cell">Mis à jour le</th>
+                <th scope="col" class="text-nowrap d-none d-lg-table-cell">Mis à jour par</th>
+                <th scope="col" class="text-nowrap text-center" style="width: 140px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (u of users; track u.id) {
+            <tr>
+                <td class="text-truncate" style="max-width: 260px;">
+                    {{ u.email }}
+                </td>
+                <td class="text-nowrap">{{ formatRoles(u.roles) }}</td>
+                <td class="text-nowrap">
+                        {{ u.isVerified ? 'Oui' : 'Non' }}
+                </td>
+                <td class="text-nowrap">{{ u.createdAt ? (u.createdAt | date:'short') : '' }}</td>
+                <td class="text-nowrap d-none d-lg-table-cell">{{ u.createdBy ?? '-' }}</td>
+                <td class="text-nowrap d-none d-md-table-cell">{{ u.updatedAt ? (u.updatedAt | date:'short') : '' }}
+                </td>
+                <td class="text-nowrap d-none d-lg-table-cell">{{ u.updatedBy ?? '-' }}</td>
+                <td class="text-center">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button class="btn btn-sm bo-btn-view" (click)="viewUser.emit(u)">
+                            Détails
+                        </button>
+                        <button class="btn btn-sm bo-btn-edit" (click)="editUser.emit(u)">
+                            Éditer
+                        </button>
+                        <button class="btn btn-sm bo-btn-delete" (click)="desactivateUser.emit(u)">
+                            Supprimer
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            }
+
+            @if (users.length === 0) {
+            <tr>
+                <td colspan="8" class="text-center py-4">Aucun utilisateur trouvé.</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>

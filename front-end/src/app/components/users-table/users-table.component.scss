@@ -1,0 +1,63 @@
+// Variables
+
+$font-size-base: 1rem !default;
+$line-height-base: 1.5 !default;
+$spacing-unit: 1rem !default;
+
+$color-bg: #f1f8fc;
+$color-primary: #0074c7;
+$color-secondary: #00497c;
+$color-text: #384050;
+$color-warning: #cd2c2e;
+$color-success: #82b864;
+
+.table {
+    width: 1200px;
+}
+
+th {
+    text-align: left;
+    margin: 0;
+    font-weight: 800;
+    color: #2b2f33;
+    font-size: 1.6rem;
+}
+td {
+    font-size: 1.1rem;
+    color: $color-text;
+    line-height: 1.6;
+}
+.bo-btn-edit, .bo-btn-view {
+    margin-top: 0.5rem;
+    align-self: flex-start;
+    background: $color-text;
+    color: $color-bg;
+    border-radius: 0.625rem;
+    padding: 0.625rem 1.625rem;
+    font-weight: 700;
+    border: none;
+}
+
+.bo-btn-edit:hover, 
+.bo-btn-view:hover {
+    background: #1f2937;
+}
+
+.bo-btn-delete {
+    margin-top: 0.5rem;
+    align-self: flex-start;
+    background: $color-warning;
+    color: $color-bg;
+    border-radius: 0.625rem;
+    padding: 0.625rem 1.625rem;
+    font-weight: 700;
+    border: none;
+}
+
+.bo-btn-delete:hover {
+    background: #972022;
+}
+
+.user-table td.text-truncate {
+    max-width: 260px;
+}
