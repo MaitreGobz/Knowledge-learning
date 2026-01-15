@@ -1,0 +1,41 @@
+<div class="modal fade show d-block bo-modal" tabindex="-1" role="dialog" aria-modal="true" (mousedown)="onBackdropMouseDown($event)">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content bo-modal-content" (mousedown)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h5 class="modal-title bo-modal-title">Détails utilisateur</h5>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeModal.emit()"></button>
+            </div>
+
+            <div class="modal-body">
+                <dl class="row mb-0">
+                    <dt class="col-5">Email</dt>
+                    <dd class="col-7">{{ user.email }}</dd>
+
+                    <dt class="col-5">Rôle</dt>
+                    <dd class="col-7">{{ formatRoles(user.roles) }}</dd>
+
+                    <dt class="col-5">Vérifié</dt>
+                    <dd class="col-7">{{ user.isVerified ? 'Oui' : 'Non' }}</dd>
+
+                    <dt class="col-5">Créé le</dt>
+                    <dd class="col-7">{{ user.createdAt | date:'short' }}</dd>
+
+                    <dt class="col-5">Créé par</dt>
+                    <dd class="col-7">{{ user.createdBy ?? '-' }}</dd>
+
+                    <dt class="col-5">Mis à jour le</dt>
+                    <dd class="col-7">{{ user.updatedAt ? (user.updatedAt | date:'short') : '-' }}</dd>
+
+                    <dt class="col-5">Mis à jour par</dt>
+                    <dd class="col-7">{{ user.updatedBy ?? '-' }}</dd>
+                </dl>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" (click)="closeModal.emit()">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop fade show bo-backdrop"></div>

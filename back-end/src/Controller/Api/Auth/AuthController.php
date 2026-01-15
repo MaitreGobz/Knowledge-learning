@@ -5,6 +5,7 @@ namespace App\Controller\Api\Auth;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
@@ -37,12 +38,15 @@ final class AuthController extends AbstractController
             )
         ]
     )]
-    public function csrf(CsrfTokenManagerInterface $csrfTokenManager): JsonResponse
+    public function csrf(Request $request, CsrfTokenManagerInterface $csrfTokenManager): JsonResponse
     {
-        // // Generate a CSRF token associated with the "auth" token ID
+        // Ensure session is started
+        $request->getSession()->start();
+
+        // Generate a CSRF token associated with the "auth" token ID
         $token = $csrfTokenManager->getToken('auth')->getValue();
 
-        //  // Return the token as JSON so it can be used by the front-end
+        // Return the token as JSON so it can be used by the front-end
         return $this->json([
             'csrfToken' => $token,
         ]);

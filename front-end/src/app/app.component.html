@@ -2,6 +2,12 @@
   <app-header></app-header>
 
   <main class="kl-main">
+
+    @if (errorMessage) {
+    <div class="alert alert-danger mt-4">
+      {{ errorMessage }}
+    </div>
+    }
     <router-outlet />
   </main>
 

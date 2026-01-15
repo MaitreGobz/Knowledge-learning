@@ -1,0 +1,41 @@
+// Variables
+
+$font-size-base: 1rem !default;
+$line-height-base: 1.5 !default;
+$spacing-unit: 1rem !default;
+
+$color-bg: #f1f8fc;
+$color-primary: #0074c7;
+$color-secondary: #00497c;
+$color-text: #384050;
+$color-warning: #cd2c2e;
+$color-success: #82b864;
+
+section {
+    background-color: $color-bg;
+    padding: $spacing-unit * 2;
+    border-radius: 0.625rem;
+    box-shadow: 0 0.625rem 1.125rem rgba(0, 0, 0, .10);
+    width: 90vw;
+    margin: 0 auto
+}
+
+.admin-users-shell {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.bo-btn-create {
+    margin-top: 0.5rem;
+    align-self: flex-start;
+    background: $color-text;
+    color: $color-bg;
+    border-radius: 0.625rem;
+    padding: 0.625rem 1.625rem;
+    font-weight: 700;
+    border: none;
+}
+
+.bo-btn-create:hover {
+    background: #1f2937;
+}
