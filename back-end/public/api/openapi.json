@@ -973,7 +973,7 @@
                 ],
                 "summary": "List all themes",
                 "description": "Retourne la liste des thèmes disponibles ordonnés par nom.",
-                "operationId": "45271caab549357f70bd147a1d176468",
+                "operationId": "a1438545beddab1ca9ebe4072c2d0f26",
                 "responses": {
                     "200": {
                         "description": "Thèmes récupérés avec succès",
@@ -999,6 +999,31 @@
                                                 "type": "string",
                                                 "example": "Contenu d'apprentissage sur le thème de la fantasy",
                                                 "nullable": true
+                                            },
+                                            "cursus": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 10
+                                                        },
+                                                        "title": {
+                                                            "type": "string",
+                                                            "example": "Cursus d'initiation à la guitare"
+                                                        },
+                                                        "description": {
+                                                            "type": "string",
+                                                            "example": "Lorem ipsum...",
+                                                            "nullable": true
+                                                        },
+                                                        "price": {
+                                                            "type": "integer",
+                                                            "example": 50
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
                                             }
                                         },
                                         "type": "object"
