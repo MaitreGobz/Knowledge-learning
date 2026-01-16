@@ -77,7 +77,7 @@ final class UserAdminController extends AbstractController
     #[OA\Response(response: 403, description: 'Accès interdit (ROLE_ADMIN requis)')]
 
     /**
-     * List users with pagination, sorting, and filtering
+     * List users with pagination
      */
     public function listUsers(Request $request, UserRepository $users): JsonResponse
     {

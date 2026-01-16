@@ -190,7 +190,7 @@ class AppFixtures extends Fixture
                     $lesson->setPosition($position);
                     $lesson->setPrice($lessonData['price']);
 
-                    // Force active to true (as requested).
+                    // Force active to true.
                     $lesson->setIsActive(true);
 
                     $lesson->setCreatedAt(clone $now);

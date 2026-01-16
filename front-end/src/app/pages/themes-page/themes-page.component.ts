@@ -1,17 +1,16 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { ThemeService } from '../../services/theme.service';
 import { ThemeCursusPreview } from '../../models/theme.model';
 
 @Component({
-  selector: 'app-home-page',
+  selector: 'app-themes-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
-  templateUrl: './home-page.component.html',
-  styleUrl: './home-page.component.scss'
+  imports: [CommonModule],
+  templateUrl: './themes-page.component.html',
+  styleUrl: './themes-page.component.scss'
 })
-export class HomePageComponent implements OnInit{
+export class ThemesPageComponent implements OnInit{
   themes: ThemeCursusPreview[] = [];
   isLoading = true;
   errorMessage: string | null = null;
@@ -19,7 +18,7 @@ export class HomePageComponent implements OnInit{
   private themeService = inject(ThemeService);
 
   ngOnInit(): void {
-    this.themeService.getAll().subscribe({
+    this.themeService.getThemesWithCursusPreview().subscribe({
       next: (themes) => {
         this.themes = themes;
         this.isLoading = false;
@@ -31,12 +30,8 @@ export class HomePageComponent implements OnInit{
     });
   }
 
-  getThemeImage(theme: ThemeCursusPreview): string {
-    // Slug mapped to image filename
-    return `assets/themes/${theme.slug}.jpg`;
-  }
-
-  onThemeImageError(event: Event): void {
-    (event.target as HTMLImageElement).src = 'assets/themes/default.jpg';
+  onBuyCursus(cursusId: number): void {
+    // Logic to handle cursus purchase, now just a console log
+    console.log(`Achat du cursus avec l'ID`, cursusId);
   }
 }
