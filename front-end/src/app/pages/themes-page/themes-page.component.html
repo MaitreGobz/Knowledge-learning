@@ -1,0 +1,55 @@
+<div class="container py-4 py-lg-5">
+    <div class="intro my-4">
+        <h1 class="kl-title mb-5">Liste des thèmes</h1>
+        <p class="kl-intro mt-3">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin augue ante,
+            placerat in commodo ut, sagittis eu erat.
+        </p>
+    </div>
+
+    <!-- Loading / Error -->
+    @if (isLoading) {
+    <div class="mt-4">Chargement des thèmes…</div>
+    } @else if (errorMessage) {
+    <div class="alert alert-danger mt-4">{{ errorMessage }}</div>
+    } @else {
+    <!-- Theme -->
+    <div class="row g-5 mt-4">
+        @for (theme of themes; track theme.id) {
+        <div class="col-12 col-lg-6">
+            <section class="kl-theme-card mb-4">
+                <h2 class="text-center mb-4">{{ theme.title }}</h2>
+
+                <!-- Cursus card -->
+                <div class="d-flex flex-column gap-4">
+                    @for (cursus of theme.cursus; track cursus.id) {
+                    <article class="kl-cursus-card d-flex flex-column flex-md-row">
+                        <div class="kl-cursus-body d-flex flex-column flex-sm-row justify-content-between gap-3">
+                            <div class="text-white">
+                                <h3 class="h4 mb-2 fw-semibold">
+                                    <a href="" class="details-link">
+                                        {{ cursus.title }}
+                                    </a>
+                                </h3>
+                                <p class="mb-0">
+                                    {{ cursus.description }}
+                                </p>
+                            </div>
+                            <div class="d-flex flex-column align-items-center justify-content-center text-white">
+                                <div class="fw-semibold">Prix</div>
+                                <div class="fs-5 mb-3">{{ cursus.price }} €</div>
+                            
+                                <button class="btn kl-btn-buy px-4" type="button" (click)="onBuyCursus(cursus.id)">
+                                    Acheter
+                                </button>
+                            </div>
+                            </div>
+                    </article>
+                    }
+                </div>
+            </section>
+        </div>
+        }
+    </div>
+    }
+</div>
