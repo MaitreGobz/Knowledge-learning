@@ -25,9 +25,9 @@
                     @for (cursus of theme.cursus; track cursus.id) {
                     <article class="kl-cursus-card d-flex flex-column flex-md-row">
                         <div class="kl-cursus-body d-flex flex-column flex-sm-row justify-content-between gap-3">
-                            <div class="text-white">
-                                <h3 class="h4 mb-2 fw-semibold">
-                                    <a href="" class="details-link">
+                            <div>
+                                <h3 class="mb-2 fw-semibold">
+                                    <a [routerLink]="['/cursus', cursus.id]" class="details-link">
                                         {{ cursus.title }}
                                     </a>
                                 </h3>
