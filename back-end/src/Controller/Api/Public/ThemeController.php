@@ -16,7 +16,7 @@ final class ThemeController extends AbstractController
     #[Route('/api/themes', name: 'api_themes_list', methods: ['GET'])]
     #[OA\Get(
         path: '/api/themes',
-        summary: 'List all themes',
+        summary: 'Afficher la liste des thèmes avec un aperçu des cursus',
         description: 'Retourne la liste des thèmes disponibles ordonnés par nom.',
         tags: ['Themes'],
         responses: [
