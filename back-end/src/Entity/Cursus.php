@@ -7,6 +7,8 @@ use App\Entity\Theme;
 use App\Entity\Traits\TimestampableTrait;
 use App\Entity\Traits\BlameableTrait;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CursusRepository::class)]

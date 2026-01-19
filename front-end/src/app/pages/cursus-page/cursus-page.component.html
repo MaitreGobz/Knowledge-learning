@@ -1,0 +1,58 @@
+<div class="container py-4 py-lg-5">
+    <div class="intro my-4">
+        <h1 class="kl-title mb-5">Détail du cursus</h1>
+    </div>
+
+    <!-- Loading / Error -->
+    @if (isLoading) {
+    <div class="mt-4">Chargement du cursus…</div>
+    } @else if (errorMessage) {
+    <div class="alert alert-danger mt-4">{{ errorMessage }}</div>
+    } @else if (cursus) {
+    <!-- Cursus -->
+    <section class="kl-cursus-details mb-4">
+        <div class="d-flex flex-column flex-lg-row justify-content-around align-items-start gap-3">
+            <div>
+                <h2 class="kl-title mb-3">{{ cursus.title }}</h2>
+            </div>
+        
+            <!-- Price block -->
+            <div class="text-center text-lg-end">
+                <div class="fw-semibold">Prix</div>
+                <div class="fs-4 fw-bold">{{ cursus.price }} €</div>
+            </div>
+        </div>
+        <p class="kl-intro mt-3 mb-5">
+            {{ cursus.description }}
+        </p>
+
+        <!-- Lessons -->
+        <div class="d-flex flex-column gap-4">
+            @for (lesson of cursus.lessons; track lesson.id) {
+            <article class="kl-lesson-card d-flex flex-column flex-md-row">
+                <div class="kl-lesson-body d-flex flex-column flex-sm-row justify-content-between gap-3 w-100">
+                    <div>
+                        <h3 class="mb-2 fw-semibold">{{ lesson.title }}</h3>
+                    </div>
+        
+                    <div class="d-flex flex-column align-items-center justify-content-center">
+                        <div class="fw-semibold">Prix</div>
+                        <div class="fs-5 mb-3">{{ lesson.price }} €</div>
+                        <button class="btn kl-btn-buy px-4" type="button" (click)="onBuyLesson(lesson.id)">
+                            Acheter
+                        </button>
+                    </div>
+                </div>
+            </article>
+            }
+        </div>
+        <div class="d-flex justify-content-center my-4">
+            <button class="btn kl-btn-buy px-4" type="button" (click)="onBuyCursus(cursus.id)">
+                Acheter le cursus complet
+            </button>
+        </div>
+    </section>
+    } @else {
+    <div class="alert alert-warning mt-4">Cursus non trouvé.</div>
+    }
+</div>

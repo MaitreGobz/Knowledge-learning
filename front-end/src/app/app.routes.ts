@@ -6,7 +6,8 @@ export const routes: Routes = [
     { path: 'login', loadComponent: () => import('./pages/login-page/login-page.component').then(m => m.LoginPageComponent) },
     { path: 'register', loadComponent: () => import('./pages/register-page/register-page.component').then(m => m.RegisterPageComponent) },
     { path: 'verify-email', loadComponent: () => import('./pages/verify-email-page/verify-email-page.component').then(m => m.VerifyEmailPageComponent) },
-    { path : 'themes', loadComponent: () => import('./pages/themes-page/themes-page.component').then(m => m.ThemesPageComponent) },
+    { path: 'themes', loadComponent: () => import('./pages/themes-page/themes-page.component').then(m => m.ThemesPageComponent) },
+    { path: 'cursus/:id', loadComponent: () => import('./pages/cursus-page/cursus-page.component').then(m => m.CursusPageComponent) },
     {
         path: 'admin', canActivate: [adminGuard], children: [
             {
