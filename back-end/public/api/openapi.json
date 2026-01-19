@@ -12,7 +12,7 @@
                     "Admin - Users"
                 ],
                 "summary": "Lister les utilisateurs (admin)",
-                "description": "List users with pagination, sorting, and filtering",
+                "description": "List users with pagination",
                 "operationId": "38fc21a8ed5a06623d2ff0015eb44162",
                 "parameters": [
                     {
@@ -966,12 +966,92 @@
                 }
             }
         },
+        "/api/cursus/{id}": {
+            "get": {
+                "tags": [
+                    "Cursus"
+                ],
+                "summary": "Afficher le détail d’un cursus avec un aperçu des leçons",
+                "description": "Retourne le cursus demandé et la liste des leçons actives (triées par position).",
+                "operationId": "bde2d047818157d1f9f830b73828c63c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Identifiant du cursus",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cursus récupéré avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "example": "Cursus d'initiation à la guitare"
+                                        },
+                                        "description": {
+                                            "type": "string",
+                                            "example": "Lorem ipsum...",
+                                            "nullable": true
+                                        },
+                                        "price": {
+                                            "type": "integer",
+                                            "example": 50
+                                        },
+                                        "lessons": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 100
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Leçon 1"
+                                                    },
+                                                    "price": {
+                                                        "type": "integer",
+                                                        "example": 26
+                                                    },
+                                                    "position": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Cursus introuvable"
+                    }
+                }
+            }
+        },
         "/api/themes": {
             "get": {
                 "tags": [
                     "Themes"
                 ],
-                "summary": "List all themes",
+                "summary": "Afficher la liste des thèmes avec un aperçu des cursus",
                 "description": "Retourne la liste des thèmes disponibles ordonnés par nom.",
                 "operationId": "a1438545beddab1ca9ebe4072c2d0f26",
                 "responses": {
@@ -1056,6 +1136,10 @@
         {
             "name": "System",
             "description": "System"
+        },
+        {
+            "name": "Cursus",
+            "description": "Cursus"
         },
         {
             "name": "Themes",

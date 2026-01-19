@@ -16,6 +16,7 @@ import { PaginationComponent } from '../../components/pagination/pagination.comp
   styleUrl: './admin-users-page.component.scss'
 })
 export class AdminUsersPageComponent implements OnInit {
+  // State signals
   loading = signal(false);
   errorMessage = signal<string | null>(null);
   users = signal<AdminUserListItem[]>([]);
@@ -23,6 +24,7 @@ export class AdminUsersPageComponent implements OnInit {
   page = signal(1);
   limit = signal(20);
 
+  // Modal state signals
   modalOpen = signal(false);
   detailsModalOpen = signal(false);
   selectedUserForDetails = signal<AdminUserListItem | null>(null);
@@ -31,6 +33,7 @@ export class AdminUsersPageComponent implements OnInit {
 
   private adminUser = inject(AdminUserService);
 
+  // On component initialization, load the list of users
   ngOnInit(): void {
     this.loadUsers();
   }
@@ -56,6 +59,7 @@ export class AdminUsersPageComponent implements OnInit {
       });
   }
 
+  // Handle user desactivation action
   onDesactivate(user: AdminUserListItem): void {
     const ok = window.confirm(`Êtes-vous sûr de vouloir désactiver "${user.email}" ?`);
     if (!ok) return;
@@ -74,6 +78,7 @@ export class AdminUsersPageComponent implements OnInit {
       });
   }
 
+  // Handle page change action
   onPageChange(page: number): void {
     const totalPages = this.meta()?.totalPages ?? 1;
     const newPage = Math.min(Math.max(1, page), totalPages);
@@ -81,23 +86,27 @@ export class AdminUsersPageComponent implements OnInit {
     this.loadUsers();
   }
 
+  // Handle modal open actions
   openCreate(): void {
     this.modalMode.set('create');
     this.editingUser.set(null);
     this.modalOpen.set(true);
   }
 
+  // Handle modal open actions
   openEdit(user: AdminUserListItem): void {
     this.modalMode.set('edit');
     this.editingUser.set(user);
     this.modalOpen.set(true);
   }
 
+  // Handle details modal open action
   openDetails(user: AdminUserListItem): void {
     this.selectedUserForDetails.set(user);
     this.detailsModalOpen.set(true);
   }
 
+  // Handle modal close actions
   closeDetails(): void {
     this.detailsModalOpen.set(false);
     this.selectedUserForDetails.set(null);
@@ -107,6 +116,7 @@ export class AdminUsersPageComponent implements OnInit {
     this.modalOpen.set(false);
   }
 
+  // Handle user creation action
   onCreate(payload: CreateUserPayload): void {
     this.loading.set(true);
     this.adminUser
@@ -123,6 +133,7 @@ export class AdminUsersPageComponent implements OnInit {
       });
   }
 
+  // Handle user update action
   onUpdate(payload: UpdateUserPayload): void {
     const user = this.editingUser();
     if (!user) return;
