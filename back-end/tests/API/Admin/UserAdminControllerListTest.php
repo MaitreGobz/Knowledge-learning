@@ -10,7 +10,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 /**
  * Tests for the UserAdminController List API endpoint
  */
-final class UserAdminContollerTest extends WebTestCase
+final class UserAdminControllerListTest extends WebTestCase
 {
     // Doctrine EntityManager used to persist and clean test data
     private EntityManagerInterface $em;
@@ -114,7 +114,7 @@ final class UserAdminContollerTest extends WebTestCase
         $this->em = $container->get(EntityManagerInterface::class);
         $this->hasher = $container->get(UserPasswordHasherInterface::class);
 
-        $this->createUser('admin@test.com', 'Admin123!', ['ROLE_ADMIN']);
+        // Create a regular user
         $this->createUser('user@test.com', 'User123!', ['ROLE_USER']);
 
         // Authenticate as a regular user

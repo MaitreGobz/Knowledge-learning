@@ -18,7 +18,7 @@ class UserRepository extends ServiceEntityRepository
     }
 
     /**
-     * List users with pagination only
+     * List users with pagination
      */
     public function listPaginated(int $page, int $limit): Paginator
     {

@@ -6,6 +6,660 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/api/admin/cursus": {
+            "get": {
+                "tags": [
+                    "Admin - Cursus"
+                ],
+                "summary": "Lister les cursus pour le back-office",
+                "description": "Retourne la liste des cursus actifs (id + titre uniquement). Utilisé pour le rattachement lors de la création d’une leçon.",
+                "operationId": "47b71c39c82b40ed3a64aeb7229cd368",
+                "responses": {
+                    "200": {
+                        "description": "Liste des cursus",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 12
+                                            },
+                                            "title": {
+                                                "type": "string",
+                                                "example": "Cursus Symfony"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "403": {
+                        "description": "Accès refusé"
+                    }
+                }
+            }
+        },
+        "/api/admin/lessons": {
+            "get": {
+                "tags": [
+                    "Admin - Lessons"
+                ],
+                "summary": "Lister les leçons (admin)",
+                "description": "List lessons with pagination",
+                "operationId": "0e127d7a72ec1079b895ebbaf32588ac",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste paginée des leçons",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Les outils du jardinier"
+                                                    },
+                                                    "price": {
+                                                        "type": "integer",
+                                                        "example": 16
+                                                    },
+                                                    "cursusId": {
+                                                        "type": "string",
+                                                        "example": "Cursus d'initiation au jardinage"
+                                                    },
+                                                    "themeTitle": {
+                                                        "type": "string",
+                                                        "example": "Jardinage"
+                                                    },
+                                                    "createdAt": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-12-30T10:00:00+00:00"
+                                                    },
+                                                    "updatedAt": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-12-31T12:00:00+00:00"
+                                                    },
+                                                    "createdBy": {
+                                                        "type": "string",
+                                                        "example": "admin@example.com",
+                                                        "nullable": true
+                                                    },
+                                                    "updatedBy": {
+                                                        "type": "string",
+                                                        "example": "admin@example.com",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "limit": {
+                                                    "type": "integer",
+                                                    "example": 20
+                                                },
+                                                "totalItems": {
+                                                    "type": "integer",
+                                                    "example": 42
+                                                },
+                                                "totalPages": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "403": {
+                        "description": "Accès interdit (ROLE_ADMIN requis)"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Admin - Lessons"
+                ],
+                "summary": "Créer une leçon (admin)",
+                "description": "Create a new lesson",
+                "operationId": "e9d0bed9eafc916df4940c3958afaa57",
+                "parameters": [
+                    {
+                        "name": "X-CSRF-TOKEN",
+                        "in": "header",
+                        "description": "Token CSRF requis (session cookie). CSRF id: auth",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "content",
+                                    "price",
+                                    "cursusId"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Les outils du jardinier"
+                                    },
+                                    "content": {
+                                        "type": "string",
+                                        "example": "Lorem ipsum..."
+                                    },
+                                    "price": {
+                                        "type": "integer",
+                                        "example": 16
+                                    },
+                                    "cursusId": {
+                                        "type": "string",
+                                        "example": "Cursus d'initiation au jardinage"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Leçon créée",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "example": "Les outils du jardinier"
+                                        },
+                                        "content": {
+                                            "type": "string",
+                                            "example": "Lorem ipsum..."
+                                        },
+                                        "price": {
+                                            "type": "integer",
+                                            "example": 16
+                                        },
+                                        "cursusId": {
+                                            "type": "string",
+                                            "example": "Cursus d'initiation au jardinage"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Requête invalide (JSON/Champs manquants)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JSON invalide."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "403": {
+                        "description": "Accès interdit (ROLE_ADMIN requis) ou CSRF invalide"
+                    },
+                    "422": {
+                        "description": "Validation échouée",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation échouée."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "title": [
+                                                    "Le titre ne doit pas être vide."
+                                                ],
+                                                "price": [
+                                                    "Le prix doit être un entier positif."
+                                                ]
+                                            },
+                                            "additionalProperties": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/lessons/{id}": {
+            "get": {
+                "tags": [
+                    "Admin - Lessons"
+                ],
+                "summary": "Détail d'une leçon (admin)",
+                "description": "Get detailed info of a lesson",
+                "operationId": "cd2d09c343a7ebc7b26c52a0fae39baf",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Identifiant de la leçon",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détail leçon",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "example": "Les outils du jardinier"
+                                        },
+                                        "price": {
+                                            "type": "integer",
+                                            "example": 16
+                                        },
+                                        "content": {
+                                            "type": "string",
+                                            "example": "Lorem ipsum..."
+                                        },
+                                        "position": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "cursusTitle": {
+                                            "type": "string",
+                                            "example": "Cursus d'initiation au jardinage"
+                                        },
+                                        "themeTitle": {
+                                            "type": "string",
+                                            "example": "Jardinage"
+                                        },
+                                        "createdAt": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "updatedAt": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "createdBy": {
+                                            "type": "string",
+                                            "example": "admin"
+                                        },
+                                        "updatedBy": {
+                                            "type": "string",
+                                            "example": "admin"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "403": {
+                        "description": "Accès interdit (ROLE_ADMIN requis)"
+                    },
+                    "404": {
+                        "description": "Leçon introuvable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Leçon introuvable."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Admin - Lessons"
+                ],
+                "summary": "Supprimer une leçon (soft delete)",
+                "description": "Suppression logique : met isActive=false. Ne supprime pas la leçon de la base.",
+                "operationId": "38d6f628a37f215baa154df2ac848147",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Identifiant de la leçon",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "X-CSRF-TOKEN",
+                        "in": "header",
+                        "description": "Token CSRF requis (session cookie). CSRF id: auth",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Leçon désactivée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Leçon désactivée"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Leçon introuvable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Leçon introuvable."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Accès interdit (ROLE_ADMIN requis) ou CSRF invalide",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Token CRSF invalide."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflit (déjà désactivée)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "La leçon est déjà désactivée"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Admin - Lessons"
+                ],
+                "summary": "Mettre à jour une leçon (admin)",
+                "description": "Update an existing lesson",
+                "operationId": "ddb9f9e87ca2889db3938ea4b49f94b5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Identifiant de la leçon",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "X-CSRF-TOKEN",
+                        "in": "header",
+                        "description": "Token CSRF requis (session cookie). CSRF id: auth",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Titre mis à jour"
+                                    },
+                                    "content": {
+                                        "type": "string",
+                                        "example": "Contenu mis à jour"
+                                    },
+                                    "price": {
+                                        "type": "integer",
+                                        "example": 20
+                                    },
+                                    "cursusId": {
+                                        "description": "Interdit via PATCH",
+                                        "type": "integer",
+                                        "example": 10
+                                    },
+                                    "themeId": {
+                                        "description": "Interdit (dérivé du cursus)",
+                                        "type": "integer",
+                                        "example": 3
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Leçon mise à jour",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "example": "Titre mis à jour"
+                                        },
+                                        "content": {
+                                            "type": "string",
+                                            "example": "Contenu mis à jour"
+                                        },
+                                        "price": {
+                                            "type": "integer",
+                                            "example": 20
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Requête invalide (JSON)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "JSON invalide."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "403": {
+                        "description": "Accès interdit (ROLE_ADMIN requis) ou CSRF invalide"
+                    },
+                    "404": {
+                        "description": "Leçon introuvable",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Leçon introuvable."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation échouée",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation échouée."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "price": "Le prix doit être un entier positif."
+                                            },
+                                            "additionalProperties": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/admin/users": {
             "get": {
                 "tags": [
@@ -80,6 +734,21 @@
                                                         "type": "string",
                                                         "format": "date-time",
                                                         "example": "2025-12-30T10:00:00+00:00"
+                                                    },
+                                                    "updatedAt": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-12-31T12:00:00+00:00"
+                                                    },
+                                                    "createdBy": {
+                                                        "type": "string",
+                                                        "example": "admin@example.com",
+                                                        "nullable": true
+                                                    },
+                                                    "updatedBy": {
+                                                        "type": "string",
+                                                        "example": "admin@example.com",
+                                                        "nullable": true
                                                     }
                                                 },
                                                 "type": "object"
@@ -297,6 +966,7 @@
                     "Admin - Users"
                 ],
                 "summary": "Détail d'un utilisateur (admin)",
+                "description": "Get detailed info of a user",
                 "operationId": "c5eec80d31dadb3c620de891450140ce",
                 "parameters": [
                     {
@@ -1128,6 +1798,14 @@
     "tags": [
         {
             "name": "Auth"
+        },
+        {
+            "name": "Admin - Cursus",
+            "description": "Admin - Cursus"
+        },
+        {
+            "name": "Admin - Lessons",
+            "description": "Admin - Lessons"
         },
         {
             "name": "Admin - Users",

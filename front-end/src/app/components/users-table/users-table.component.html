@@ -13,29 +13,29 @@
             </tr>
         </thead>
         <tbody>
-            @for (u of users; track u.id) {
+            @for (user of users; track user.id) {
             <tr>
                 <td class="text-truncate" style="max-width: 260px;">
-                    {{ u.email }}
+                    {{ user.email }}
                 </td>
-                <td class="text-nowrap">{{ formatRoles(u.roles) }}</td>
+                <td class="text-nowrap">{{ formatRoles(user.roles) }}</td>
                 <td class="text-nowrap">
-                        {{ u.isVerified ? 'Oui' : 'Non' }}
+                        {{ user.isVerified ? 'Oui' : 'Non' }}
                 </td>
-                <td class="text-nowrap">{{ u.createdAt ? (u.createdAt | date:'short') : '' }}</td>
-                <td class="text-nowrap d-none d-lg-table-cell">{{ u.createdBy ?? '-' }}</td>
-                <td class="text-nowrap d-none d-md-table-cell">{{ u.updatedAt ? (u.updatedAt | date:'short') : '' }}
+                <td class="text-nowrap">{{ user.createdAt ? (user.createdAt | date:'short') : '' }}</td>
+                <td class="text-nowrap d-none d-lg-table-cell">{{ user.createdBy ?? '-' }}</td>
+                <td class="text-nowrap d-none d-md-table-cell">{{ user.updatedAt ? (user.updatedAt | date:'short') : '' }}
                 </td>
-                <td class="text-nowrap d-none d-lg-table-cell">{{ u.updatedBy ?? '-' }}</td>
+                <td class="text-nowrap d-none d-lg-table-cell">{{ user.updatedBy ?? '-' }}</td>
                 <td class="text-center">
                     <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                        <button class="btn btn-sm bo-btn-view" (click)="viewUser.emit(u)">
+                        <button class="btn btn-sm bo-btn-view" (click)="viewUser.emit(user)">
                             Détails
                         </button>
-                        <button class="btn btn-sm bo-btn-edit" (click)="editUser.emit(u)">
+                        <button class="btn btn-sm bo-btn-edit" (click)="editUser.emit(user)">
                             Éditer
                         </button>
-                        <button class="btn btn-sm bo-btn-delete" (click)="desactivateUser.emit(u)">
+                        <button class="btn btn-sm bo-btn-delete" (click)="desactivateUser.emit(user)">
                             Supprimer
                         </button>
                     </div>
