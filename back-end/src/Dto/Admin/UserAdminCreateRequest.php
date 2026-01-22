@@ -33,7 +33,7 @@ final class UserAdminCreateRequest
     public ?bool $isVerified = null;
 
     /**
-     * Normalize and set default values
+     * Normalize input values
      */
     public function normalize(): void
     {

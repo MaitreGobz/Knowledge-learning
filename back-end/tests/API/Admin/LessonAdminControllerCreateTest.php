@@ -3,17 +3,20 @@
 namespace App\Tests\API\Admin;
 
 use App\Entity\User;
+use App\Entity\Theme;
+use App\Entity\Cursus;
+use App\Entity\Lesson;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
- * Tests for the UserAdminController create user endpoints.
+ * Tests for the LessonAdminController create lesson endpoint.
  */
-final class UserAdminControllerCreateTest extends WebTestCase
+final class LessonAdminControllerCreateTest extends WebTestCase
 {
-    //Endpoint URL for creating users
-    private const CREATE_URL = '/api/admin/users';
+    // Endpoint URL for creating lessons
+    private const CREATE_URL = '/api/admin/lessons';
 
     // Doctrine EntityManager used to persist and clean test data
     private EntityManagerInterface $em;
@@ -61,9 +64,39 @@ final class UserAdminControllerCreateTest extends WebTestCase
     }
 
     /**
-     * Ensure that an authenticated admin user can create a new user.
+     * Minimal fixture for a lesson (Theme -> Cursus)
      */
-    public function testAdminCanCreateUser(): void
+    private function createCursusFixture(): Cursus
+    {
+        $now = new \DateTime();
+
+        $theme = new Theme();
+        $theme->setTitle('Theme test');
+        $theme->setDescription('Description test');
+        $theme->setSlug('theme-test');
+        $theme->setCreatedAt($now);
+        $theme->setUpdatedAt($now);
+        $this->em->persist($theme);
+
+        $cursus = new Cursus();
+        $cursus->setTitle('Cursus test');
+        $cursus->setDescription('Description test');
+        $cursus->setPrice(10);
+        $cursus->setIsActive(true);
+        $cursus->setTheme($theme);
+        $cursus->setCreatedAt($now);
+        $cursus->setUpdatedAt($now);
+        $this->em->persist($cursus);
+
+        $this->em->flush();
+
+        return $cursus;
+    }
+
+    /**
+     * Ensures that an authenticated admin user can create a new lesson.
+     */
+    public function testAdminCanCreateLesson(): void
     {
         $client = static::createClient();
         $container = static::getContainer();
@@ -71,10 +104,15 @@ final class UserAdminControllerCreateTest extends WebTestCase
         $this->em = $container->get(EntityManagerInterface::class);
         $this->hasher = $container->get(UserPasswordHasherInterface::class);
 
+        // Clean tables
+        $this->em->createQuery('DELETE FROM App\Entity\Lesson l')->execute();
+        $this->em->createQuery('DELETE FROM App\Entity\Cursus c')->execute();
+        $this->em->createQuery('DELETE FROM App\Entity\Theme t')->execute();
         $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
 
-        // Create admin
+        // Create admin user and cursus fixture
         $this->createUser('admin@test.com', 'Admin123!', ['ROLE_ADMIN']);
+        $cursus = $this->createCursusFixture();
 
         // Authenticate as admin
         $this->login($client, 'admin@test.com', 'Admin123!');
@@ -83,14 +121,12 @@ final class UserAdminControllerCreateTest extends WebTestCase
         $client->request(
             'POST',
             self::CREATE_URL,
-            server: [
-                'CONTENT_TYPE' => 'application/json',
-                'HTTP_ACCEPT' => 'application/json',
-            ],
+            server: ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json'],
             content: json_encode([
-                'email' => 'new.user@test.com',
-                'password' => 'User123!',
-                'roles' => ['ROLE_USER']
+                'title' => 'New lesson',
+                'content' => 'This is the lesson content (min 10 chars).',
+                'price' => 15,
+                'cursusId' => $cursus->getId(),
             ], JSON_THROW_ON_ERROR)
         );
 
@@ -98,31 +134,25 @@ final class UserAdminControllerCreateTest extends WebTestCase
 
         $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-        //Validate response structure
+        // Validate response structure
         $this->assertArrayHasKey('id', $data);
-        $this->assertSame('new.user@test.com', $data['email']);
-        $this->assertArrayHasKey('roles', $data);
-        $this->assertArrayHasKey('isActive', $data);
-        $this->assertArrayHasKey('isVerified', $data);
-        $this->assertArrayHasKey('createdAt', $data);
-        $this->assertArrayHasKey('updatedAt', $data);
-
-        // Never expose password
-        $this->assertArrayNotHasKey('password', $data);
-        $this->assertArrayNotHasKey('hashedPassword', $data);
+        $this->assertSame('New lesson', $data['title']);
+        $this->assertSame(15, $data['price']);
 
         // Verify DB side
-        $repo = $this->em->getRepository(User::class);
-        $created = $repo->findOneBy(['email' => 'new.user@test.com']);
+        $repo = $this->em->getRepository(Lesson::class);
+        $created = $repo->find($data['id']);
         $this->assertNotNull($created);
-        $this->assertNotSame('StrongP@ssw0rd123!', $created->getPassword());
-        $this->assertTrue($created->isVerified());
+        $this->assertSame('New lesson', $created->getTitle());
+        $this->assertSame(15, $created->getPrice());
+        $this->assertTrue($created->isActive());
+        $this->assertSame($cursus->getId(), $created->getCursus()->getId());
     }
 
     /**
-     * Ensure that an authenticated non-admin user cannot create a new user.
+     * Ensures that an authenticated non-admin user cannot create a new lesson.
      */
-    public function testUserCannotCreateUser(): void
+    public function testUserCannotCreateLesson(): void
     {
         $client = static::createClient();
         $container = static::getContainer();
@@ -138,48 +168,43 @@ final class UserAdminControllerCreateTest extends WebTestCase
         // Authenticate as regular user
         $this->login($client, 'user@test.com', 'User123!');
 
-        // Attempt to create new user
+        // Attempt to call create endpoint
         $client->request(
             'POST',
             self::CREATE_URL,
             server: [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_ACCEPT' => 'application/json',
+                'HTTP_ACCEPT' => 'application/json'
             ],
             content: json_encode([
-                'email' => 'new.user@test.com',
-                'password' => 'StrongP@ssw0rd123!',
+                'title' => 'New lesson',
+                'content' => 'This is the lesson content (min 10 chars).',
+                'price' => 15,
+                'cursusId' => 1,
             ], JSON_THROW_ON_ERROR)
         );
 
-        // IsGranted must block
+        // Is granted must block
         $this->assertResponseStatusCodeSame(403);
     }
 
     /**
-     * Ensure that an anonymous user cannot create a new user.
+     * Ensures that an anonymous user cannot create a new lesson.
      */
-    public function testAnonymousCannotCreateUser(): void
+    public function testAnonymousCannotCreateLesson(): void
     {
         $client = static::createClient();
-        $container = static::getContainer();
-
-        $this->em = $container->get(EntityManagerInterface::class);
-        $this->hasher = $container->get(UserPasswordHasherInterface::class);
-
-        $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
 
         // No authentication performed
         $client->request(
             'POST',
             self::CREATE_URL,
-            server: [
-                'CONTENT_TYPE' => 'application/json',
-                'HTTP_ACCEPT' => 'application/json',
-            ],
+            server: ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json'],
             content: json_encode([
-                'email' => 'new.user@test.com',
-                'password' => 'StrongP@ssw0rd123!',
+                'title' => 'New lesson',
+                'content' => 'This is the lesson content (min 10 chars).',
+                'price' => 15,
+                'cursusId' => 1,
             ], JSON_THROW_ON_ERROR)
         );
 
@@ -187,49 +212,7 @@ final class UserAdminControllerCreateTest extends WebTestCase
     }
 
     /**
-     * Ensure that an authenticated admin user cannot create a new user with an emil already existing.
-     */
-    public function testAdminEmailAlreadyExists(): void
-    {
-        $client = static::createClient();
-        $container = static::getContainer();
-
-        $this->em = $container->get(EntityManagerInterface::class);
-        $this->hasher = $container->get(UserPasswordHasherInterface::class);
-
-        $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
-
-        // Create admin
-        $this->createUser('admin@test.com', 'Admin123!', ['ROLE_ADMIN']);
-
-        // Create existing user
-        $this->createUser('dup@test.com', 'User123!', ['ROLE_USER']);
-
-        // Authenticate as admin
-        $this->login($client, 'admin@test.com', 'Admin123!');
-
-        $client->request(
-            'POST',
-            self::CREATE_URL,
-            server: [
-                'CONTENT_TYPE' => 'application/json',
-                'HTTP_ACCEPT' => 'application/json',
-            ],
-            content: json_encode([
-                'email' => 'dup@test.com',
-                'password' => 'StrongP@ssw0rd123!',
-                'roles' => ['ROLE_USER']
-            ], JSON_THROW_ON_ERROR)
-        );
-
-        $this->assertResponseStatusCodeSame(409);
-
-        $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $this->assertSame('Email déjà existant.', $data['message']);
-    }
-
-    /**
-     * Ensure that an authenticated admin user gets validation errors when creating a new user with invalid data.
+     * Ensures that an authenticated admin user gets validation errors when creating a lesson with invalid data.
      */
     public function testAdminValidationError(): void
     {
@@ -253,11 +236,13 @@ final class UserAdminControllerCreateTest extends WebTestCase
             self::CREATE_URL,
             server: [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_ACCEPT' => 'application/json',
+                'HTTP_ACCEPT' => 'application/json'
             ],
             content: json_encode([
-                'email' => 'bad@test.com',
-                'password' => 'weak',
+                'title' => '',
+                'content' => 'short',
+                'price' => -1,
+                'cursusId' => null,
             ], JSON_THROW_ON_ERROR)
         );
 
@@ -291,10 +276,7 @@ final class UserAdminControllerCreateTest extends WebTestCase
         $client->request(
             'POST',
             self::CREATE_URL,
-            server: [
-                'CONTENT_TYPE' => 'application/json',
-                'HTTP_ACCEPT' => 'application/json',
-            ],
+            server: ['CONTENT_TYPE' => 'application/json', 'HTTP_ACCEPT' => 'application/json'],
             content: '{invalid-json'
         );
 

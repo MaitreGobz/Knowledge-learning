@@ -16,6 +16,9 @@ export const routes: Routes = [
             {
                 path: 'users', loadComponent: () => import('./pages/admin-users-page/admin-users-page.component').then(m => m.AdminUsersPageComponent),
             },
+            {
+                path: 'lessons', loadComponent: () => import('./pages/admin-lessons-page/admin-lessons-page.component').then(m => m.AdminLessonsPageComponent),
+            }
         ]
     },
     { path: '**', loadComponent: () => import('./pages/not-found-page/not-found-page.component').then(m => m.NotFoundPageComponent) },

@@ -1,5 +1,3 @@
-// src/app/admin/users/services/admin-user.service.ts
-
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService, ParamsRecord } from '../services/api.service';
@@ -66,4 +64,3 @@ export class AdminUserService {
         return record;
     }
 }
-

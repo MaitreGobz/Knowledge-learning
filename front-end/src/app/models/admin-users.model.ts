@@ -37,8 +37,8 @@ export interface CreateUserPayload {
 }
 
 export interface UpdateUserPayload {
-    email: string;
+    email?: string;
     password?: string;
-    roles: AdminRole[];
-    isVerified: boolean;
+    roles?: AdminRole[];
+    isVerified?: boolean;
 }

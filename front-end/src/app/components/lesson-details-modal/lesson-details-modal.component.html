@@ -1,0 +1,47 @@
+<div class="modal fade show d-block bo-modal" tabindex="-1" role="dialog" aria-modal="true"
+    (mousedown)="onBackdropMouseDown($event)">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content bo-modal-content" (mousedown)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h5 class="modal-title bo-modal-title">Détails d'une leçon</h5>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeModal.emit()"></button>
+            </div>
+
+            <div class="modal-body">
+                <dl class="row mb-0">
+                    <dt class="col-5">Titre</dt>
+                    <dd class="col-7">{{ lesson.title }}</dd>
+
+                    <dt class="col-5">Prix</dt>
+                    <dd class="col-7">{{ lesson.price }}</dd>
+
+                    <dt class="col-5">Cursus</dt>
+                    <dd class="col-7">{{lesson.cursusTitle}}</dd>
+
+                    <dt class="col-5">Thème</dt>
+                    <dd class="col-7">{{ lesson.themeTitle }}</dd>
+
+                    <dt class="col-5">Contenu</dt>
+                    <dd class="col-7">{{ lesson.content }}</dd>
+
+                    <dt class="col-5">Créée le</dt>
+                    <dd class="col-7">{{ lesson.createdAt ? (lesson.createdAt | date:'short') : '' }}</dd>
+
+                    <dt class="col-5">Créée par</dt>
+                    <dd class="col-7">{{ lesson.createdBy ?? '-' }}</dd>
+
+                    <dt class="col-5">Mis à jour le</dt>
+                    <dd class="col-7">{{ lesson.updatedAt ? (lesson.updatedAt | date:'short') : '-' }}</dd>
+
+                    <dt class="col-5">Mis à jour par</dt>
+                    <dd class="col-7">{{ lesson.updatedBy ?? '-' }}</dd>
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" (click)="closeModal.emit()">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop fade show bo-backdrop"></div>
