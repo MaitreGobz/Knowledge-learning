@@ -3,17 +3,20 @@
 namespace App\Tests\API\Admin;
 
 use App\Entity\User;
+use App\Entity\Theme;
+use App\Entity\Cursus;
+use App\Entity\Lesson;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
- * Tests for the UserAdminController Detail API endpoint
+ * Tests for the LessonAdminController Detail API endpoint
  */
-final class UserAdminControllerDetailTest extends WebTestCase
+final class LessonAdminControllerDetailTest extends WebTestCase
 {
-    // Endpoint URL for user details
-    private const DETAIL_URL_TEMPLATE = '/api/admin/users/%d';
+    // Endpoint URL for lesson details
+    private const DETAIL_URL_TEMPLATE = '/api/admin/lessons/%d';
 
     // Doctrine EntityManager used to persist and clean test data
     private EntityManagerInterface $em;
@@ -27,7 +30,6 @@ final class UserAdminControllerDetailTest extends WebTestCase
 
     /**
      * Creates and persists a User entity for testing purposes.
-     * Roles are injected explicitly to simulate admin or standard users.
      */
     private function createUser(string $email, string $plainPassword, array $roles): User
     {
@@ -35,6 +37,7 @@ final class UserAdminControllerDetailTest extends WebTestCase
         $user->setEmail($email);
         $user->setRoles($roles);
         $user->setIsVerified(true);
+        $user->setIsActive(true);
 
         $hashed = $this->hasher->hashPassword($user, $plainPassword);
         $user->setPassword($hashed);
@@ -47,6 +50,7 @@ final class UserAdminControllerDetailTest extends WebTestCase
 
     /**
      * Performs a login request against the API authentication endpoint.
+     * Roles are injected explicitly to simulate admin or standard users.
      */
     private function login(\Symfony\Bundle\FrameworkBundle\KernelBrowser $client, string $email, string $password): void
     {
@@ -61,9 +65,50 @@ final class UserAdminControllerDetailTest extends WebTestCase
     }
 
     /**
-     * Ensure that an authenticated admin user can retrieve the details of a specific user.
+     * Minimal fixture for a lesson (Theme -> Cursus -> Lesson)
      */
-    public function testAdminCanShowUser(): void
+    private function createLessonFixture(): Lesson
+    {
+        $now = new \DateTime();
+
+        $theme = new Theme();
+        $theme->setTitle('Theme test');
+        $theme->setDescription('Description test');
+        $theme->setSlug('theme-test');
+        $theme->setCreatedAt($now);
+        $theme->setUpdatedAt($now);
+        $this->em->persist($theme);
+
+        $cursus = new Cursus();
+        $cursus->setTitle('Cursus test');
+        $cursus->setDescription('Description test');
+        $cursus->setPrice(10);
+        $cursus->setIsActive(true);
+        $cursus->setTheme($theme);
+        $cursus->setCreatedAt($now);
+        $cursus->setUpdatedAt($now);
+        $this->em->persist($cursus);
+
+        $lesson = new Lesson();
+        $lesson->setTitle('Lesson test');
+        $lesson->setContent('Content for lesson test');
+        $lesson->setPrice(10);
+        $lesson->setPosition(1);
+        $lesson->setIsActive(true);
+        $lesson->setCursus($cursus);
+        $lesson->setCreatedAt($now);
+        $lesson->setUpdatedAt($now);
+
+        $this->em->persist($lesson);
+        $this->em->flush();
+
+        return $lesson;
+    }
+
+    /**
+     * Ensure that an authenticated admin user can retrieve the details of a specific lesson.
+     */
+    public function testAdminCanShowLesson(): void
     {
         $client = static::createClient();
         $container = static::getContainer();
@@ -71,12 +116,15 @@ final class UserAdminControllerDetailTest extends WebTestCase
         $this->em = $container->get(EntityManagerInterface::class);
         $this->hasher = $container->get(UserPasswordHasherInterface::class);
 
-        // Clean users table (same pattern as your list test if needed)
+        // Clean tables
+        $this->em->createQuery('DELETE FROM App\Entity\Lesson l')->execute();
+        $this->em->createQuery('DELETE FROM App\Entity\Cursus c')->execute();
+        $this->em->createQuery('DELETE FROM App\Entity\Theme t')->execute();
         $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
 
-        // Create admin + target
+        // Create admin + target lesson
         $this->createUser('admin@test.com', 'Admin123!', ['ROLE_ADMIN']);
-        $target = $this->createUser('user@test.com', 'User123!', ['ROLE_USER']);
+        $target = $this->createLessonFixture();
 
         // Authenticate as admin
         $this->login($client, 'admin@test.com', 'Admin123!');
@@ -94,20 +142,20 @@ final class UserAdminControllerDetailTest extends WebTestCase
 
         // Validate response structure
         $this->assertSame($target->getId(), $data['id']);
-        $this->assertSame('user@test.com', $data['email']);
-        $this->assertArrayHasKey('roles', $data);
-        $this->assertArrayHasKey('isVerified', $data);
-        $this->assertArrayHasKey('createdAt', $data);
+        $this->assertSame('Lesson test', $data['title']);
+        $this->assertArrayHasKey('content', $data);
+        $this->assertArrayHasKey('price', $data);
+        $this->assertArrayHasKey('position', $data);
 
-        // Never expose password
-        $this->assertArrayNotHasKey('password', $data);
-        $this->assertArrayNotHasKey('hashedPassword', $data);
+        // Validate related entities
+        $this->assertArrayHasKey('cursus', $data);
+        $this->assertArrayHasKey('theme', $data);
     }
 
     /**
-     * Ensure that an authenticated non-admin user cannot retrieve the details of a specific user.
+     * Ensure that an authenticated non-admin user cannot retrieve the details of a specific lesson.
      */
-    public function testUserCannotShowUser(): void
+    public function testUserCannotShowLesson(): void
     {
         $client = static::createClient();
         $container = static::getContainer();
@@ -117,12 +165,12 @@ final class UserAdminControllerDetailTest extends WebTestCase
 
         $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
 
-        // Create user + target
-        $this->createUser('user1@test.com', 'User123!', ['ROLE_USER']);
-        $target = $this->createUser('target@test.com', 'User123!', ['ROLE_USER']);
+        // Create user + target lesson
+        $this->createUser('user@test.com', 'User123!', ['ROLE_USER']);
+        $target = $this->createLessonFixture();
 
         // Authenticate as regular user
-        $this->login($client, 'user1@test.com', 'User123!');
+        $this->login($client, 'user@test.com', 'User123!');
 
         // Attempt to access admin endpoint
         $client->request(
@@ -135,24 +183,16 @@ final class UserAdminControllerDetailTest extends WebTestCase
     }
 
     /**
-     * Ensure that an anonymous user cannot retrieve the details of a specific user.
+     * Ensure that an anonymous user cannot retrieve the details of a specific lesson.
      */
-    public function testAnonymousCannotShowUser(): void
+    public function testAnonymousCannotShowLesson(): void
     {
         $client = static::createClient();
-        $container = static::getContainer();
-
-        $this->em = $container->get(EntityManagerInterface::class);
-        $this->hasher = $container->get(UserPasswordHasherInterface::class);
-
-        $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
-
-        $target = $this->createUser('user@test.com', 'User123!', ['ROLE_USER']);
 
         // No authentication performed
         $client->request(
             'GET',
-            sprintf(self::DETAIL_URL_TEMPLATE, $target->getId()),
+            sprintf(self::DETAIL_URL_TEMPLATE, 1),
             server: ['HTTP_ACCEPT' => 'application/json']
         );
 
@@ -160,9 +200,9 @@ final class UserAdminControllerDetailTest extends WebTestCase
     }
 
     /**
-     * Ensure that admin receives 404 for a non-existing user id.
+     * Ensure that admin receives 404 for a non-existing lesson id.
      */
-    public function testShowUserNotFound(): void
+    public function testShowLessonNotFound(): void
     {
         $client = static::createClient();
         $container = static::getContainer();
@@ -172,13 +212,13 @@ final class UserAdminControllerDetailTest extends WebTestCase
 
         $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
 
-        // Create admin
+        // Create admin user
         $this->createUser('admin@test.com', 'Admin123!', ['ROLE_ADMIN']);
 
         // Authenticate as admin
         $this->login($client, 'admin@test.com', 'Admin123!');
 
-        // Non-existing id
+        // Non-existing lesson id
         $client->request(
             'GET',
             sprintf(self::DETAIL_URL_TEMPLATE, 999999),

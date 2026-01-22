@@ -74,7 +74,7 @@ export class UserFormModalComponent implements OnChanges, OnInit, OnDestroy {
     this.closeModal.emit();
   }
 
-  // Close when clicking outside the dialog
+  // Close when clicking outside modal content
   onBackdropMouseDown(_: MouseEvent): void {
     this.closeModal.emit();
   }

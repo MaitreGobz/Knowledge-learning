@@ -1,0 +1,51 @@
+<div class="lesson-table table-responsive">
+    <table class="table table-bordered table-hover align-middle mb-0">
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Titre</th>
+                <th scope="col" class="text-nowrap">Prix</th>
+                <th scope="col" class="text-nowrap">Cursus</th>
+                <th scope="col" class="text-nowrap">Thème</th>
+                <th scope="col" class="text-nowrap d-none d-md-table-cell">Contenu</th>
+                <th scope="col" class="text-nowrap d-none d-lg-table-cell">Créée le</th>
+                <th scope="col" class="text-nowrap d-none d-lg-table-cell">Créée par</th>
+                <th scope="col" class="text-nowrap text-center" style="width: 140px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (lesson of lessons; track lesson.id) {
+            <tr>
+                <td class="text-nowrap">
+                    {{ lesson.title }}
+                </td>
+                <td class="text-nowrap">{{ lesson.price }}</td>
+                <td class="text-nowrap">{{ lesson.cursusTitle }}</td>
+                <td class="text-nowrap">{{ lesson.themeTitle }}</td>
+                <td class="text-truncate d-none d-lg-table-cell">{{ lesson.content }}</td>
+                <td class="text-nowrap d-none d-md-table-cell">{{ lesson.createdAt ? (lesson.createdAt | date:'short') : '' }}
+                </td>
+                <td class="text-nowrap d-none d-lg-table-cell">{{ lesson.createdBy ?? '-' }}</td>
+                <td class="text-center">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button class="btn btn-sm bo-btn-view" (click)="viewLesson.emit(lesson)">
+                            Détails
+                        </button>
+                        <button class="btn btn-sm bo-btn-edit" (click)="editLesson.emit(lesson)">
+                            Éditer
+                        </button>
+                        <button class="btn btn-sm bo-btn-delete" (click)="desactivateLesson.emit(lesson)">
+                            Supprimer
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            }
+
+            @if (lessons.length === 0) {
+            <tr>
+                <td colspan="8" class="text-center py-4">Aucune leçon trouvée.</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
