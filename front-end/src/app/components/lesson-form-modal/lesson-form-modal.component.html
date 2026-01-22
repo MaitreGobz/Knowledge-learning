@@ -1,0 +1,90 @@
+<div class="modal fade show d-block bo-modal" tabindex="-1" role="dialog" aria-modal="true"
+    (mousedown)="onBackdropMouseDown($event)">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content bo-modal-content" (mousedown)="$event.stopPropagation()">
+
+            <div class="modal-header">
+                <h5 class="modal-title bo-modal-title">
+                    {{ mode === 'create' ? 'Créer une leçon' : 'Modifier une leçon' }}
+                </h5>
+
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeModal.emit()"></button>
+            </div>
+
+            <form [formGroup]="lessonForm" (ngSubmit)="onSubmit()">
+                <div class="modal-body bo-modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Titre</label>
+                        <input type="text" id="title" class="form-control" formControlName="title" />
+                        @if (lessonForm.controls.title.touched && lessonForm.controls.title.invalid) {
+                        <div class="text-danger small">
+                            @if (lessonForm.controls.title.errors?.['required']) { Le titre est requis. }
+                            @if (lessonForm.controls.title.errors?.['minlength']) { Le titre doit faire au moins 3
+                            caractères. }
+                        </div>
+                        }
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Prix</label>
+                        <input type="number" id="price" class="form-control" formControlName="price" />
+                        @if (lessonForm.controls.price.touched && lessonForm.controls.price.invalid) {
+                        <div class="text-danger small">
+                            @if (lessonForm.controls.price.errors?.['required']) { Le prix est requis. }
+                            @if (lessonForm.controls.price.errors?.['min']) { Le prix doit être positif. }
+                        </div>
+                        }
+                    </div>
+
+                    <!-- Cursus select (CREATE ONLY) -->
+                    @if (mode === 'create') {
+                    <div class="mb-3">
+                        <label for="cursusId" class="form-label">Cursus</label>
+
+                        @if (loadingCursus) {
+                        <div class="alert alert-info">Chargement des cursus…</div>
+                        } @else {
+                        <select id="cursusId" class="form-select" formControlName="cursusId">
+                            <option [ngValue]="null">-- Sélectionner un cursus --</option>
+                            @for (cursusOption of cursusOptions; track cursusOption.id) {
+                            <option [ngValue]="cursusOption.id">{{ cursusOption.title }}</option>
+                            }
+                        </select>
+
+                        @if (lessonForm.controls.cursusId.touched && lessonForm.controls.cursusId.invalid) {
+                        <div class="text-danger small">Veuillez sélectionner un cursus.</div>
+                        }
+                        }
+                    </div>
+                    }
+
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Contenu</label>
+                        <textarea id="content" rows="6" class="form-control" formControlName="content"></textarea>
+                        @if (lessonForm.controls.content.touched && lessonForm.controls.content.invalid) {
+                        <div class="text-danger small">
+                            @if (lessonForm.controls.content.errors?.['required']) { Le contenu est requis. }
+                            @if (lessonForm.controls.content.errors?.['minlength']) { Le contenu doit faire au moins 10
+                            caractères. }
+                        </div>
+                        }
+                    </div>
+
+                </div>
+
+                <div class="modal-footer bo-modal-footer">
+                    <button type="button" class="btn btn-outline-secondary bo-btn-cancel" (click)="closeModal.emit()">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary bo-btn-submit">
+                        {{ mode === 'create' ? 'Créer' : 'Enregistrer' }}
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Backdrop -->
+<div class="modal-backdrop fade show bo-backdrop"></div>

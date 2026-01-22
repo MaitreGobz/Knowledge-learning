@@ -57,6 +57,9 @@ final class UserAdminController extends AbstractController
                             new OA\Property(property: 'email', type: 'string', example: 'admin@example.com'),
                             new OA\Property(property: 'isVerified', type: 'boolean', example: true),
                             new OA\Property(property: 'createdAt', type: 'string', format: 'date-time', example: '2025-12-30T10:00:00+00:00'),
+                            new OA\Property(property: 'updatedAt', type: 'string', format: 'date-time', example: '2025-12-31T12:00:00+00:00'),
+                            new OA\Property(property: 'createdBy', type: 'string', example: 'admin@example.com', nullable: true),
+                            new OA\Property(property: 'updatedBy', type: 'string', example: 'admin@example.com', nullable: true),
                         ]
                     )
                 ),
@@ -89,7 +92,7 @@ final class UserAdminController extends AbstractController
 
         $paginator = $users->listPaginated($page, $limit);
 
-        // Total items depends on repository implementation
+        // Calculate total items and pages
         $totalItems = count($paginator);
         $totalPages = (int) ceil($totalItems / $limit);
 
@@ -160,6 +163,9 @@ final class UserAdminController extends AbstractController
             ]
         )
     )]
+    /**
+     * Get detailed info of a user
+     */
     public function detailUser(int $id, UserRepository $users): JsonResponse
     {
         $user = $users->find($id);
@@ -288,7 +294,7 @@ final class UserAdminController extends AbstractController
         // Decode and validate JSON payload
         $data = json_decode($request->getContent(), true);
         if (!is_array($data)) {
-            return $this->json(['message' => 'Invalid JSON.'], 400);
+            return $this->json(['message' => 'JSON invalide.'], 400);
         }
 
         // Hydrate and normalize DTO
@@ -471,6 +477,7 @@ final class UserAdminController extends AbstractController
             ]
         )
     )]
+
     /**
      * Update an existing user
      */
@@ -566,6 +573,7 @@ final class UserAdminController extends AbstractController
 
         $em->flush();
 
+        // Successful update response
         return $this->json([
             'message' => 'Utilisateur mis à jour avec succès.',
             'id' => $user->getId(),
@@ -581,7 +589,7 @@ final class UserAdminController extends AbstractController
     }
 
     // --- DELETE ---
-    // - Delete user
+    // - Soft delete user
     #[Route('/api/admin/users/{id}', name: 'api_admin_users_delete', methods: ['DELETE'], requirements: ['id' => '\d+'])]
     #[IsGranted('ROLE_ADMIN')]
     #[OA\Delete(
@@ -682,7 +690,7 @@ final class UserAdminController extends AbstractController
             return $this->json(['message' => 'Compte désactivé'], 200);
         }
 
-        // If we reach here, the user is already inactive
+        // Already inactive
         return $this->json(['message' => 'Le compte est déjà désactivé'], 409);
     }
 }

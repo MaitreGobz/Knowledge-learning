@@ -3,14 +3,17 @@
 namespace App\Tests\API\Admin;
 
 use App\Entity\User;
+use App\Entity\Theme;
+use App\Entity\Cursus;
+use App\Entity\Lesson;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
- * Tests for the UserAdminController delete endpoint
+ * Tests for the LessonAdminController delete endpoint
  */
-final class UserAdminControllerDeleteTest extends WebTestCase
+final class LessonAdminControllerDeleteTest extends WebTestCase
 {
     // Doctrine EntityManager used to persist and clean test data
     private EntityManagerInterface $em;
@@ -58,9 +61,50 @@ final class UserAdminControllerDeleteTest extends WebTestCase
     }
 
     /**
-     * Ensures that an authenticated admin user can soft delete a user (DELETE -> isActive=false).
+     * Minimal fixture for a lesson (Theme -> Cursus -> Lesson)
      */
-    public function testAdminCanDeleteUser(): void
+    private function createLessonFixture(): Lesson
+    {
+        $now = new \DateTime();
+
+        $theme = new Theme();
+        $theme->setTitle('Theme test');
+        $theme->setDescription('Description test');
+        $theme->setSlug('theme-test');
+        $theme->setCreatedAt($now);
+        $theme->setUpdatedAt($now);
+        $this->em->persist($theme);
+
+        $cursus = new Cursus();
+        $cursus->setTitle('Cursus test');
+        $cursus->setDescription('Description test');
+        $cursus->setPrice(10);
+        $cursus->setIsActive(true);
+        $cursus->setTheme($theme);
+        $cursus->setCreatedAt($now);
+        $cursus->setUpdatedAt($now);
+        $this->em->persist($cursus);
+
+        $lesson = new Lesson();
+        $lesson->setTitle('Lesson test');
+        $lesson->setContent('Content for lesson test');
+        $lesson->setPrice(10);
+        $lesson->setPosition(1);
+        $lesson->setIsActive(true);
+        $lesson->setCursus($cursus);
+        $lesson->setCreatedAt($now);
+        $lesson->setUpdatedAt($now);
+
+        $this->em->persist($lesson);
+        $this->em->flush();
+
+        return $lesson;
+    }
+
+    /**
+     * Ensures that an authenticated admin user can soft delete a lesson (DELETE -> isActive=false).
+     */
+    public function testAdminCanDeleteLesson(): void
     {
         $client = static::createClient();
         $container = static::getContainer();
@@ -68,9 +112,15 @@ final class UserAdminControllerDeleteTest extends WebTestCase
         $this->em = $container->get(EntityManagerInterface::class);
         $this->hasher = $container->get(UserPasswordHasherInterface::class);
 
-        // Create an admin + target user
+        // Clean tables
+        $this->em->createQuery('DELETE FROM App\Entity\Lesson l')->execute();
+        $this->em->createQuery('DELETE FROM App\Entity\Cursus c')->execute();
+        $this->em->createQuery('DELETE FROM App\Entity\Theme t')->execute();
+        $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
+
+        // Create an admin + target lesson
         $this->createUser('admin@test.com', 'Admin123!', ['ROLE_ADMIN']);
-        $target = $this->createUser('target@test.com', 'User123!', ['ROLE_USER']);
+        $target = $this->createLessonFixture();
 
         // Authenticate as admin
         $this->login($client, 'admin@test.com', 'Admin123!');
@@ -78,16 +128,17 @@ final class UserAdminControllerDeleteTest extends WebTestCase
         // Call the delete endpoint
         $client->request(
             'DELETE',
-            '/api/admin/users/' . $target->getId(),
+            '/api/admin/lessons/' . $target->getId(),
             server: ['HTTP_ACCEPT' => 'application/json']
         );
+
         $this->assertResponseStatusCodeSame(200);
     }
 
     /**
-     * Ensures that an authenticated admin user cannot delete himself
+     * Ensures that a non-admin user cannot delete a lesson
      */
-    public function testAdminCannotDeleteSelf(): void
+    public function testNonAdminCannotDeleteLesson(): void
     {
         $client = static::createClient();
         $container = static::getContainer();
@@ -95,35 +146,11 @@ final class UserAdminControllerDeleteTest extends WebTestCase
         $this->em = $container->get(EntityManagerInterface::class);
         $this->hasher = $container->get(UserPasswordHasherInterface::class);
 
-        // Create an admin user
-        $admin = $this->createUser('admin@test.com', 'Admin123!', ['ROLE_ADMIN']);
+        $this->em->createQuery('DELETE FROM App\Entity\User u')->execute();
 
-        // Authenticate as admin
-        $this->login($client, 'admin@test.com', 'Admin123!');
-
-        // Call the delete endpoint on self
-        $client->request(
-            'DELETE',
-            '/api/admin/users/' . $admin->getId(),
-            server: ['HTTP_ACCEPT' => 'application/json']
-        );
-        $this->assertResponseStatusCodeSame(409);
-    }
-
-    /**
-     * Ensures that a non-admin user cannot delete a user
-     */
-    public function testNonAdminCannotDeleteUser(): void
-    {
-        $client = static::createClient();
-        $container = static::getContainer();
-
-        $this->em = $container->get(EntityManagerInterface::class);
-        $this->hasher = $container->get(UserPasswordHasherInterface::class);
-
-        // Create a non-admin + target user
+        // Create non-admin user + target lesson
         $this->createUser('user@test.com', 'User123!', ['ROLE_USER']);
-        $target = $this->createUser('target@test.com', 'Target123!', ['ROLE_USER']);
+        $target = $this->createLessonFixture();
 
         // Authenticate as non-admin
         $this->login($client, 'user@test.com', 'User123!');
@@ -131,32 +158,27 @@ final class UserAdminControllerDeleteTest extends WebTestCase
         // Call the delete endpoint
         $client->request(
             'DELETE',
-            '/api/admin/users/' . $target->getId(),
+            '/api/admin/lessons/' . $target->getId(),
             server: ['HTTP_ACCEPT' => 'application/json']
         );
+
         $this->assertResponseStatusCodeSame(403);
     }
 
     /**
-     * Ensure that an anonymous user cannot delete a user
+     * Ensures that an anonymous user cannot delete a lesson
      */
-    public function testAnonymousCannotDeleteUser(): void
+    public function testAnonymousCannotDeleteLesson(): void
     {
         $client = static::createClient();
-        $container = static::getContainer();
-
-        $this->em = $container->get(EntityManagerInterface::class);
-        $this->hasher = $container->get(UserPasswordHasherInterface::class);
-
-        // Create a target user
-        $target = $this->createUser('target@test.com', 'Target123!', ['ROLE_USER']);
 
         // No authentication performed
         $client->request(
             'DELETE',
-            '/api/admin/users/' . $target->getId(),
+            '/api/admin/lessons/1',
             server: ['HTTP_ACCEPT' => 'application/json']
         );
+
         $this->assertResponseStatusCodeSame(401);
     }
 }

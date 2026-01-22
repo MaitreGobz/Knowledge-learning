@@ -168,6 +168,7 @@ Les tests couvrent notamment :
 - Certification automatique après validation complète d’un cursus
 - Backoffice administrateur (accessible uniquement avec ROLE_ADMIN):
   Les requêtes modifiantes nécessitent un CSRF header
+  Possibilité de gestion des utilisateur et des du contenu (leçons)
 
 ## Auteur
 
