@@ -1,0 +1,5 @@
+# Services test configuration
+services:
+    App\Service\Payment\StripeClientInterface:
+        class: App\Tests\Double\StripeClientFake
+        public: true
