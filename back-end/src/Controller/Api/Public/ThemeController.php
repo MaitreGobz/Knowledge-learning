@@ -17,45 +17,44 @@ final class ThemeController extends AbstractController
     #[OA\Get(
         path: '/api/themes',
         summary: 'Afficher la liste des thèmes avec un aperçu des cursus',
-        description: 'Retourne la liste des thèmes disponibles ordonnés par nom.',
-        tags: ['Themes'],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Thèmes récupérés avec succès',
-                content: new OA\JsonContent(
-                    type: 'array',
-                    items: new OA\Items(
-                        type: 'object',
-                        properties: [
-                            new OA\Property(property: 'id', type: 'integer', example: 1),
-                            new OA\Property(property: 'title', type: 'string', example: 'Fantasy'),
-                            new OA\Property(property: 'slug', type: 'string', example: 'fantasy'),
-                            new OA\Property(
-                                property: 'description',
-                                type: 'string',
-                                nullable: true,
-                                example: 'Contenu d\'apprentissage sur le thème de la fantasy'
-                            ),
-                            new OA\Property(
-                                property: 'cursus',
-                                type: 'array',
-                                items: new OA\Items(
-                                    type: 'object',
-                                    properties: [
-                                        new OA\Property(property: 'id', type: 'integer', example: 10),
-                                        new OA\Property(property: 'title', type: 'string', example: "Cursus d'initiation à la guitare"),
-                                        new OA\Property(property: 'description', type: 'string', nullable: true, example: "Lorem ipsum..."),
-                                        new OA\Property(property: 'price', type: 'integer', example: 50),
-                                    ]
-                                )
-                            )
-                        ]
-                    )
-                )
-            )
-        ]
+        tags: ['Themes']
     )]
+
+    #[OA\Response(
+        response: 200,
+        description: 'Thèmes récupérés avec succès',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(
+                type: 'object',
+                properties: [
+                    new OA\Property(property: 'id', type: 'integer', example: 1),
+                    new OA\Property(property: 'title', type: 'string', example: 'Fantasy'),
+                    new OA\Property(property: 'slug', type: 'string', example: 'fantasy'),
+                    new OA\Property(
+                        property: 'description',
+                        type: 'string',
+                        nullable: true,
+                        example: "Contenu d'apprentissage sur le thème de la fantasy"
+                    ),
+                    new OA\Property(
+                        property: 'cursus',
+                        type: 'array',
+                        items: new OA\Items(
+                            type: 'object',
+                            properties: [
+                                new OA\Property(property: 'id', type: 'integer', example: 10),
+                                new OA\Property(property: 'title', type: 'string', example: "Cursus d'initiation à la guitare"),
+                                new OA\Property(property: 'description', type: 'string', nullable: true, example: 'Lorem ipsum...'),
+                                new OA\Property(property: 'price', type: 'integer', example: 50),
+                            ]
+                        )
+                    )
+                ]
+            )
+        )
+    )]
+
     /**
      * Lists all themes ordered by their ID.
      */

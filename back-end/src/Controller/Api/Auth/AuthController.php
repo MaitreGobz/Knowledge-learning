@@ -18,26 +18,26 @@ final class AuthController extends AbstractController
     #[Route('/api/auth/csrf', name: 'api_auth_csrf', methods: ['GET'])]
     #[OA\Get(
         path: '/api/auth/csrf',
-        summary: 'Récupérer un token CSRF pour la SPA Angular',
-        description: 'Retourne un token CSRF à utiliser dans le header X-CSRF-TOKEN pour les requêtes d\'écriture (POST/PUT/PATCH/DELETE)',
-        tags: ['Auth'],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Token CSRF généré',
-                content: new OA\JsonContent(
-                    required: ['csrfToken'],
-                    properties: [
-                        new OA\Property(
-                            property: 'csrfToken',
-                            type: 'string',
-                            example: 'Zk9sMTRyV2Q5T1p...'
-                        )
-                    ]
-                )
-            )
-        ]
+        summary: 'Récupérer un token CSRF',
+        tags: ['Auth']
     )]
+
+    #[OA\Response(
+        response: 200,
+        description: 'Token CSRF généré',
+        content: new OA\JsonContent(
+            type: 'object',
+            required: ['csrfToken'],
+            properties: [
+                new OA\Property(
+                    property: 'csrfToken',
+                    type: 'string',
+                    example: 'Zk9sMTRyV2Q5T1p...'
+                )
+            ]
+        )
+    )]
+
     public function csrf(Request $request, CsrfTokenManagerInterface $csrfTokenManager): JsonResponse
     {
         // Ensure session is started

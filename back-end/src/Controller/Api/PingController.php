@@ -9,18 +9,21 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class PingController extends AbstractController
 {
+    #[Route('/api/ping', name: 'api_ping', methods: ['GET'])]
     #[OA\Get(
-        path: "/api/ping",
-        summary: "Ping API Health Check",
-        tags: ["System"],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: "API is healthy",
-            )
-        ]
+        path: '/api/ping',
+        summary: 'Ping API Health Check',
+        tags: ['System']
     )]
-    #[Route(path: '/api/ping', name: 'api_ping', methods: ['GET'])]
+
+    #[OA\Response(
+        response: 200,
+        description: 'API is healthy'
+    )]
+
+    /**
+     * Simple health check endpoint.
+     */
     public function ping(): JsonResponse
     {
         return $this->json([

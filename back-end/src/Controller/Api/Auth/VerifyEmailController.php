@@ -17,37 +17,61 @@ final class VerifyEmailController extends AbstractController
     #[Route('/api/auth/verify-email', name: 'api_auth_verify_email', methods: ['GET'])]
     #[OA\Get(
         path: '/api/auth/verify-email',
-        operationId: 'authVerifyEmail',
         summary: 'Vérifier un compte via URL signée',
-        description: 'Valide le compte utilisateur à partir d\'une URL signée envoyée par email.',
-        tags: ['Auth'],
-        parameters: [
-            new OA\Parameter(
-                name: 'id',
-                description: 'ID utilisateur',
-                in: 'query',
-                required: true,
-                schema: new OA\Schema(type: 'integer'),
-                example: 123
-            ),
-            new OA\Parameter(name: 'signature', in: 'query', required: true, schema: new OA\Schema(type: 'string')),
-            new OA\Parameter(name: 'expires', in: 'query', required: true, schema: new OA\Schema(type: 'integer')),
-            new OA\Parameter(name: 'hash', in: 'query', required: true, schema: new OA\Schema(type: 'string')),
-        ],
-        responses: [
-            new OA\Response(response: 204, description: 'Compte vérifié'),
-            new OA\Response(
-                response: 404,
-                description: 'Utilisateur introuvable',
-                content: new OA\JsonContent(properties: [new OA\Property(property: 'message', type: 'string')])
-            ),
-            new OA\Response(
-                response: 400,
-                description: 'Lien invalide ou expiré',
-                content: new OA\JsonContent(properties: [new OA\Property(property: 'message', type: 'string')])
-            ),
-        ]
+        tags: ['Auth']
     )]
+
+    #[OA\Parameter(
+        name: 'id',
+        in: 'query',
+        required: true,
+        schema: new OA\Schema(type: 'integer'),
+        example: 123
+    )]
+    #[OA\Parameter(
+        name: 'signature',
+        in: 'query',
+        required: true,
+        schema: new OA\Schema(type: 'string')
+    )]
+    #[OA\Parameter(
+        name: 'expires',
+        in: 'query',
+        required: true,
+        schema: new OA\Schema(type: 'integer')
+    )]
+    #[OA\Parameter(
+        name: 'hash',
+        in: 'query',
+        required: true,
+        schema: new OA\Schema(type: 'string')
+    )]
+
+    #[OA\Response(response: 204, description: 'Compte vérifié')]
+    #[OA\Response(
+        response: 400,
+        description: 'Lien invalide ou expiré',
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'message', type: 'string', example: 'Lien invalide ou expiré.')
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Utilisateur introuvable',
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'message', type: 'string', example: 'Utilisateur introuvable.')
+            ]
+        )
+    )]
+
+    /**
+     * Handles email verification via a signed URL.
+     */
     public function __invoke(
         Request $request,
         UserRepository $users,

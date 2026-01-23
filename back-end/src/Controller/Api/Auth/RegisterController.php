@@ -24,56 +24,65 @@ final class RegisterController extends AbstractController
     #[Route('/api/auth/register', name: 'api_auth_register', methods: ['POST'])]
     #[OA\Post(
         path: '/api/auth/register',
-        operationId: 'authRegister',
         summary: 'Inscription utilisateur',
-        description: 'Créer un utilisateur avec le statut en attente de vérification (par email)',
-        tags: ['Auth'],
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                required: ['email', 'password'],
-                properties: [
-                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'user@test.com'),
-                    new OA\Property(property: 'password', type: 'string', example: 'User123!', minLength: 8),
-                ]
-            )
-        ),
-        responses: [
-            new OA\Response(
-                response: 201,
-                description: 'Utilisateur crée (en attente de vérification)',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'id', type: 'integer', example: '123'),
-                        new OA\Property(property: 'email', type: 'string', format: 'email', example: 'user@test.com'),
-                        new OA\Property(property: 'status', type: 'string', example: 'PENDING_VERIFICATION'),
-                    ]
-                )
-            ),
-            new OA\Response(
-                response: 422,
-                description: 'Erreur de validation',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'errors', type: 'object', example: [
-                            'email' => ["L'email doit être valide"],
-                            'password' => ["Le mot de passe doit contenir au moins 8 caractères"],
-                            'emptyFields' => ["Tous les champs doivent être remplis"]
-                        ])
-                    ]
-                )
-            ),
-            new OA\Response(
-                response: 409,
-                description: 'Email déjà existant',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'message', type: 'string', example: 'Email déjà existant.')
-                    ]
-                )
-            ),
-        ]
+        tags: ['Auth']
     )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            type: 'object',
+            required: ['email', 'password'],
+            properties: [
+                new OA\Property(property: 'email', type: 'string', format: 'email', example: 'user@test.com'),
+                new OA\Property(property: 'password', type: 'string', minLength: 8, example: 'User123!'),
+            ]
+        )
+    )]
+
+    #[OA\Response(
+        response: 201,
+        description: 'Utilisateur créé (en attente de vérification)',
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'id', type: 'integer', example: 123),
+                new OA\Property(property: 'email', type: 'string', format: 'email', example: 'user@test.com'),
+                new OA\Property(property: 'status', type: 'string', example: 'PENDING_VERIFICATION'),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 409,
+        description: 'Email déjà existant',
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'message', type: 'string', example: 'Email déjà existant.')
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Erreur de validation',
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(
+                    property: 'errors',
+                    type: 'object',
+                    example: [
+                        'email' => ["L'email doit être valide"],
+                        'password' => ["Le mot de passe doit contenir au moins 8 caractères"],
+                        'emptyFields' => ["Tous les champs doivent être remplis"]
+                    ]
+                )
+            ]
+        )
+    )]
+
+    /**
+     * Handles user registration requests.
+     */
     public function __invoke(
         Request $request,
         ValidatorInterface $validator,
