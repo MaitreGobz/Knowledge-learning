@@ -17,51 +17,46 @@ final class CursusController extends AbstractController
     #[Route('/api/cursus/{id}', name: 'api_cursus_details', methods: ['GET'])]
     #[OA\Get(
         path: '/api/cursus/{id}',
-        summary: 'Afficher le détail d’un cursus avec un aperçu des leçons',
-        description: 'Retourne le cursus demandé et la liste des leçons actives (triées par position).',
-        tags: ['Cursus'],
-        parameters: [
-            new OA\Parameter(
-                name: 'id',
-                description: 'Identifiant du cursus',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'integer', example: 10)
-            )
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Cursus récupéré avec succès',
-                content: new OA\JsonContent(
-                    type: 'object',
-                    properties: [
-                        new OA\Property(property: 'id', type: 'integer', example: 10),
-                        new OA\Property(property: 'title', type: 'string', example: "Cursus d'initiation à la guitare"),
-                        new OA\Property(property: 'description', type: 'string', nullable: true, example: 'Lorem ipsum...'),
-                        new OA\Property(property: 'price', type: 'integer', example: 50),
-                        new OA\Property(
-                            property: 'lessons',
-                            type: 'array',
-                            items: new OA\Items(
-                                type: 'object',
-                                properties: [
-                                    new OA\Property(property: 'id', type: 'integer', example: 100),
-                                    new OA\Property(property: 'title', type: 'string', example: 'Leçon 1'),
-                                    new OA\Property(property: 'price', type: 'integer', example: 26),
-                                    new OA\Property(property: 'position', type: 'integer', example: 1),
-                                ]
-                            )
-                        )
-                    ]
-                )
-            ),
-            new OA\Response(
-                response: 404,
-                description: 'Cursus introuvable'
-            )
-        ]
+        summary: 'Afficher le détail d\’un cursus avec un aperçu des leçons',
+        tags: ['Cursus']
     )]
+
+    #[OA\Parameter(
+        name: 'id',
+        in: 'path',
+        required: true,
+        schema: new OA\Schema(type: 'integer'),
+        example: 10
+    )]
+
+    #[OA\Response(
+        response: 200,
+        description: 'Cursus récupéré avec succès',
+        content: new OA\JsonContent(
+            type: 'object',
+            properties: [
+                new OA\Property(property: 'id', type: 'integer', example: 10),
+                new OA\Property(property: 'title', type: 'string', example: "Cursus d'initiation à la guitare"),
+                new OA\Property(property: 'description', type: 'string', nullable: true, example: 'Lorem ipsum...'),
+                new OA\Property(property: 'price', type: 'integer', example: 50),
+                new OA\Property(
+                    property: 'lessons',
+                    type: 'array',
+                    items: new OA\Items(
+                        type: 'object',
+                        properties: [
+                            new OA\Property(property: 'id', type: 'integer', example: 100),
+                            new OA\Property(property: 'title', type: 'string', example: 'Leçon 1'),
+                            new OA\Property(property: 'price', type: 'integer', example: 26),
+                            new OA\Property(property: 'position', type: 'integer', example: 1),
+                        ]
+                    )
+                )
+            ]
+        )
+    )]
+    #[OA\Response(response: 404, description: 'Cursus introuvable')]
+
     /**
      * Get details of a specific cursus by ID, including a preview of its lessons.
      */

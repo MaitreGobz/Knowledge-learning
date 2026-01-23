@@ -2,8 +2,8 @@
 
 namespace App\Controller\Api\Admin;
 
-use App\Repository\CursusRepository;
 use OpenApi\Attributes as OA;
+use App\Repository\CursusRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -18,34 +18,26 @@ final class CursusAdminController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     #[OA\Get(
         path: '/api/admin/cursus',
-        summary: 'Lister les cursus pour le back-office',
-        description: 'Retourne la liste des cursus actifs (id + titre uniquement). Utilisé pour le rattachement lors de la création d’une leçon.',
-        tags: ['Admin - Cursus'],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Liste des cursus',
-                content: new OA\JsonContent(
-                    type: 'array',
-                    items: new OA\Items(
-                        type: 'object',
-                        properties: [
-                            new OA\Property(property: 'id', type: 'integer', example: 12),
-                            new OA\Property(property: 'title', type: 'string', example: 'Cursus Symfony'),
-                        ]
-                    )
-                )
-            ),
-            new OA\Response(
-                response: 401,
-                description: 'Non authentifié'
-            ),
-            new OA\Response(
-                response: 403,
-                description: 'Accès refusé'
-            )
-        ]
+        summary: 'Lister les cursus (admin)',
+        tags: ['Admin - Cursus']
     )]
+
+    #[OA\Response(
+        response: 200,
+        description: 'Liste des cursus actifs',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(
+                type: 'object',
+                properties: [
+                    new OA\Property(property: 'id', type: 'integer', example: 12),
+                    new OA\Property(property: 'title', type: 'string', example: 'Cursus Symfony'),
+                ]
+            )
+        )
+    )]
+    #[OA\Response(response: 401, description: 'Non authentifié')]
+    #[OA\Response(response: 403, description: 'Accès interdit (ROLE_ADMIN requis)')]
 
     /**
      * Lists active cursus for admin purposes.
