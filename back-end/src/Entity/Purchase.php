@@ -16,7 +16,7 @@ class Purchase
 {
     use TimestampableTrait;
     use BlameableTrait;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -25,7 +25,7 @@ class Purchase
     //Relations
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
-    private ?Users $user = null;
+    private ?User $user = null;
 
     #[ORM\ManyToOne(targetEntity: Cursus::class)]
     #[ORM\JoinColumn(name: 'cursus_id', referencedColumnName: 'id', nullable: false)]

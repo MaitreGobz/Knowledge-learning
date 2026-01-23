@@ -2,6 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Cursus;
+use App\Entity\Lesson;
+use App\Entity\User;
 use App\Entity\Purchase;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,28 +19,29 @@ class PurchaseRepository extends ServiceEntityRepository
         parent::__construct($registry, Purchase::class);
     }
 
-    //    /**
-    //     * @return Purchase[] Returns an array of Purchase objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    // Check if a user has purchased a specific cursus
+    public function purchasedCursusByUser(User $user, Cursus $cursus): bool
+    {
+        return (bool) $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->andWhere('p.user = :user')
+            ->andWhere('p.cursus = :cursus')
+            ->setParameter('user', $user)
+            ->setParameter('cursus', $cursus)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 
-    //    public function findOneBySomeField($value): ?Purchase
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    // Check if a user has purchased a specific lesson
+    public function purchasedLessonByUser(User $user, Lesson $lesson): bool
+    {
+        return (bool) $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->andWhere('p.user = :user')
+            ->andWhere('p.lesson = :lesson')
+            ->setParameter('user', $user)
+            ->setParameter('lesson', $lesson)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

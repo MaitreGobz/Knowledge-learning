@@ -193,6 +193,14 @@ final class LessonAdminController extends AbstractController
             'price' => $lesson->getPrice(),
             'content' => $lesson->getContent(),
             'position' => $lesson->getPosition(),
+            'cursus' => $cursus ? [
+                'id' => $cursus->getId(),
+                'title' => $cursus->getTitle(),
+            ] : null,
+            'theme' => $theme ? [
+                'id' => $theme->getId(),
+                'title' => $theme->getTitle(),
+            ] : null,
             'cursusTitle' => $cursus?->getTitle(),
             'themeTitle' => $theme?->getTitle(),
             'createdAt' => $lesson->getCreatedAt()?->format(\DateTimeInterface::ATOM),
@@ -560,6 +568,7 @@ final class LessonAdminController extends AbstractController
         description: "Suppression logique : met isActive=false. Ne supprime pas la leçon de la base.",
         tags: ['Admin - Lessons']
     )]
+
     #[OA\Parameter(
         name: 'id',
         in: 'path',
@@ -584,6 +593,7 @@ final class LessonAdminController extends AbstractController
             ]
         )
     )]
+
     #[OA\Response(
         response: 404,
         description: "Leçon introuvable",
