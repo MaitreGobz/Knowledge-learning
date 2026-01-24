@@ -13,14 +13,17 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AccessRightRepository::class)]
 #[ORM\Table(
-    name: 'access_rights', 
-    uniqueConstraints: [new ORM\UniqueConstraint(name: 'uniq_access_right', columns: ['user_id', 'cursus_id'])]
-    )]
+    name: 'access_rights',
+    uniqueConstraints: [
+        new ORM\UniqueConstraint(name: 'uniq_access_right_cursus', columns: ['user_id', 'cursus_id']),
+        new ORM\UniqueConstraint(name: 'uniq_access_right_lesson', columns: ['user_id', 'lesson_id'])
+    ]
+)]
 class AccessRight
 {
     use TimestampableTrait;
     use BlameableTrait;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -52,14 +55,50 @@ class AccessRight
         return $this->id;
     }
 
-    public function getUser(): ?Users
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(?Users $user): static
+    public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getCursus(): ?Cursus
+    {
+        return $this->cursus;
+    }
+
+    public function setCursus(?Cursus $cursus): static
+    {
+        $this->cursus = $cursus;
+
+        return $this;
+    }
+
+    public function getLesson(): ?Lesson
+    {
+        return $this->lesson;
+    }
+
+    public function setLesson(?Lesson $lesson): static
+    {
+        $this->lesson = $lesson;
+
+        return $this;
+    }
+
+    public function getPurchase(): ?Purchase
+    {
+        return $this->purchase;
+    }
+
+    public function setPurchase(?Purchase $purchase): static
+    {
+        $this->purchase = $purchase;
 
         return $this;
     }
