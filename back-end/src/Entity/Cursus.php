@@ -28,6 +28,10 @@ class Cursus
     #[ORM\JoinColumn(name: 'theme_id', referencedColumnName: 'id', nullable: false)]
     private ?Theme $theme = null;
 
+    #[ORM\OneToMany(mappedBy: 'cursus', targetEntity: Lesson::class, orphanRemoval: false)]
+    #[ORM\OrderBy(['position' => 'ASC'])]
+    private Collection $lessons;
+
     //Attributes
     #[ORM\Column(length: 255)]
     private ?string $title = null;
@@ -40,6 +44,16 @@ class Cursus
 
     #[ORM\Column(name: 'is_active', options: ['default' => true])]
     private ?bool $isActive = true;
+
+    public function __construct()
+    {
+        $this->lessons = new ArrayCollection();
+    }
+
+    public function getLessons(): Collection
+    {
+        return $this->lessons;
+    }
 
     public function getId(): ?int
     {

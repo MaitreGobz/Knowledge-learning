@@ -28,11 +28,11 @@ class Purchase
     private ?User $user = null;
 
     #[ORM\ManyToOne(targetEntity: Cursus::class)]
-    #[ORM\JoinColumn(name: 'cursus_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'cursus_id', referencedColumnName: 'id', nullable: true)]
     private ?Cursus $cursus = null;
 
     #[ORM\ManyToOne(targetEntity: Lesson::class)]
-    #[ORM\JoinColumn(name: 'lesson_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'lesson_id', referencedColumnName: 'id', nullable: true)]
     private ?Lesson $lesson = null;
 
     //Attributes
@@ -51,6 +51,42 @@ class Purchase
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getCursus(): ?Cursus
+    {
+        return $this->cursus;
+    }
+
+    public function setCursus(?Cursus $cursus): static
+    {
+        $this->cursus = $cursus;
+
+        return $this;
+    }
+
+    public function getLesson(): ?Lesson
+    {
+        return $this->lesson;
+    }
+
+    public function setLesson(?Lesson $lesson): static
+    {
+        $this->lesson = $lesson;
+
+        return $this;
     }
 
     public function getAmount(): ?int
