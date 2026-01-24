@@ -47,6 +47,7 @@ security:
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/api/themes, roles: PUBLIC_ACCESS }
         - { path: ^/api/cursus, roles: PUBLIC_ACCESS }
+        - { path: ^/api/stripe/webhook, roles: PUBLIC_ACCESS }
 
         # Logout accessible if logged in
         - { path: ^/api/auth/logout, roles: IS_AUTHENTICATED_FULLY }
