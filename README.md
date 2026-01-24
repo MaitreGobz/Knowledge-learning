@@ -133,6 +133,36 @@ Date : n’importe quelle date future
 
 CVC : n’importe quel code
 
+### Webhook Stripe (développement)
+
+Le projet utilise les webhooks Stripe pour valider définitivement les paiements.
+
+En environnement local, Stripe CLI est utilisé pour rediriger les événements Stripe vers l’API.
+
+Lancer le webhook en local:
+
+```bash
+stripe listen --forward-to http://127.0.0.1:8000/api/stripe/webhook
+```
+
+Stripe CLI fournit alors un secret de webhook (whsec\_...) à renseigner dans le fichier .env.local :
+
+```bash
+STRIPE_WEBHOOK_SECRET=whsec_XXXXXXXXXXXXXXXXX
+```
+
+Fonctionnement
+
+Après un paiement Stripe réussi (checkout.session.completed) :
+
+l’API reçoit l’événement via le webhook
+
+l’achat est enregistré en base de données
+
+les droits d’accès au contenu (leçon ou cursus) sont attribués
+
+Le webhook est public mais sécurisé par la signature Stripe.
+
 ## 🧪 Tests
 
 ### Backend (PHPUnit)
