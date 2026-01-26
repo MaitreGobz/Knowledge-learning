@@ -38,7 +38,7 @@
                     <div class="d-flex flex-column align-items-center justify-content-center">
                         <div class="fw-semibold">Prix</div>
                         <div class="fs-5 mb-3">{{ lesson.price }} €</div>
-                        <button class="btn kl-btn-buy px-4" type="button" (click)="onBuyLesson(lesson.id)">
+                        <button class="btn kl-btn-buy px-4" type="button" [disabled]="isBuying" (click)="onBuyLesson(lesson.id)">
                             Acheter
                         </button>
                     </div>
@@ -46,10 +46,16 @@
             </article>
             }
         </div>
-        <div class="d-flex justify-content-center my-4">
-            <button class="btn kl-btn-buy px-4" type="button" (click)="onBuyCursus(cursus.id)">
+        <div class="d-flex flex-column align-items-center justify-content-center my-4">
+            <button class="btn kl-btn-buy px-4" type="button" [disabled]="isBuying" (click)="onBuyCursus(cursus.id)">
                 Acheter le cursus complet
             </button>
+
+            @if (buyErrorMessage) {
+            <div class="alert alert-danger mt-2">
+                {{ buyErrorMessage }}
+            </div>
+            }
         </div>
     </section>
     } @else {

@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ThemeRepository::class)]
 #[ORM\Table(name: 'themes')]
+#[ORM\HasLifecycleCallbacks]
 class Theme
 {
     use TimestampableTrait;

@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
         new ORM\UniqueConstraint(name: 'uniq_access_right_lesson', columns: ['user_id', 'lesson_id'])
     ]
 )]
+#[ORM\HasLifecycleCallbacks]
 class AccessRight
 {
     use TimestampableTrait;
