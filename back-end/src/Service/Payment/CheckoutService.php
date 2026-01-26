@@ -60,6 +60,13 @@ final class CheckoutService
     // Common method to create a checkout session
     private function create(User $user, string $itemType, int $itemId, string $title, int $amount): array
     {
+        // Validate minimum amount for Stripe
+        $unitAmount = (int) round(((float) $amount) * 100);
+
+        if ($unitAmount < 50) {
+            throw new \DomainException('Montant minimum Stripe : 0,50 €');
+        }
+
         // Prepare success and cancel URLs
         $successUrl = rtrim($this->frontendUrl, '/') . $this->successPath . "?session_id={CHECKOUT_SESSION_ID}";
         $cancelUrl = rtrim($this->frontendUrl, '/') . $this->cancelPath;
@@ -69,12 +76,11 @@ final class CheckoutService
             'mode' => 'payment',
             'success_url' => $successUrl,
             'cancel_url' => $cancelUrl,
-
             'line_items' => [[
                 'quantity' => 1,
                 'price_data' => [
                     'currency' => 'eur',
-                    'unit_amount' => $amount,
+                    'unit_amount' => $unitAmount,
                     'product_data' => [
                         'name' => $title,
                     ],

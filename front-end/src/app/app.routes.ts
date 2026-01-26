@@ -21,5 +21,7 @@ export const routes: Routes = [
             }
         ]
     },
+    { path: 'checkout-success', loadComponent: () => import('./pages/checkout-success-page/checkout-success-page.component').then(m => m.CheckoutSuccessPageComponent) },
+    { path: 'checkout-cancel', loadComponent: () => import('./pages/checkout-cancel-page/checkout-cancel-page.component').then(m => m.CheckoutCancelPageComponent) },
     { path: '**', loadComponent: () => import('./pages/not-found-page/not-found-page.component').then(m => m.NotFoundPageComponent) },
 ];

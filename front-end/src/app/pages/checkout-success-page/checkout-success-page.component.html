@@ -1,0 +1,9 @@
+<section class="container d-flex flex-column justify-content-center align-items-center text-center py-5">
+  <h1 class="kl-title">Paiement réussi</h1>
+  <p>Votre achat a été pris en compte.</p>
+  
+  @if (sessionId) {
+  <p>Session : {{ sessionId }}</p>
+  }
+  <a routerLink="/themes">Retour au catalogue</a>
+</section>
