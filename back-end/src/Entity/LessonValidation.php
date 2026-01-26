@@ -12,14 +12,14 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: LessonValidationRepository::class)]
 #[ORM\Table(
     name: 'lesson_validations',
-    uniqueConstraints: 
-    [new ORM\UniqueConstraint(name: 'uniq_lv_user_lesson', columns: ['user_id', 'lesson_id'])]
-    )]
+    uniqueConstraints: [new ORM\UniqueConstraint(name: 'uniq_lv_user_lesson', columns: ['user_id', 'lesson_id'])]
+)]
+#[ORM\HasLifecycleCallbacks]
 class LessonValidation
 {
     use TimestampableTrait;
     use BlameableTrait;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

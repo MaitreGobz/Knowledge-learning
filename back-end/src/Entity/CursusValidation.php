@@ -10,14 +10,16 @@ use App\Entity\Traits\BlameableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CursusValidationRepository::class)]
-#[ORM\Table(name: 'cursus_validations',
+#[ORM\Table(
+    name: 'cursus_validations',
     uniqueConstraints: [new ORM\UniqueConstraint(name: 'uniq_cv_user_cursus', columns: ['user_id', 'cursus_id'])]
-    )]
+)]
+#[ORM\HasLifecycleCallbacks]
 class CursusValidation
 {
     use TimestampableTrait;
     use BlameableTrait;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -30,7 +32,7 @@ class CursusValidation
 
     #[ORM\ManyToOne(targetEntity: Cursus::class)]
     #[ORM\JoinColumn(name: 'cursus_id', referencedColumnName: 'id', nullable: false)]
-    private Cursus $cursus; 
+    private Cursus $cursus;
 
     //Attributes
     #[ORM\Column(name: 'validated_at')]
