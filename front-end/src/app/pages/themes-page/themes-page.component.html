@@ -7,6 +7,12 @@
         </p>
     </div>
 
+    @if (buyErrorMessage) {
+    <div class="alert alert-danger mt-2">
+        {{ buyErrorMessage }}
+    </div>
+    }
+    
     <!-- Loading / Error -->
     @if (isLoading) {
     <div class="mt-4">Chargement des thèmes…</div>
@@ -39,7 +45,7 @@
                                 <div class="fw-semibold">Prix</div>
                                 <div class="fs-5 mb-3">{{ cursus.price }} €</div>
                             
-                                <button class="btn kl-btn-buy px-4" type="button" (click)="onBuyCursus(cursus.id)">
+                                <button class="btn kl-btn-buy px-4" type="button" [disabled]="isBuying" (click)="onBuyCursus(cursus.id)">
                                     Acheter
                                 </button>
                             </div>

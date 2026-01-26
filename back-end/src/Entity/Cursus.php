@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CursusRepository::class)]
 #[ORM\Table(name: 'cursus')]
+#[ORM\HasLifecycleCallbacks]
 class Cursus
 {
     use TimestampableTrait;

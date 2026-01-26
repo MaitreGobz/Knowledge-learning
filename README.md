@@ -180,6 +180,9 @@ Les tests couvrent notamment :
 - Paiement (avec mocks)
 - Sécurité des accès
 
+Les tests unitaires sont principalement réalisés côté backend (Symfony).
+Le frontend Angular n’intègre pas de tests unitaires dédiés, l’accent ayant été mis sur l’architecture et la fiabilité de l’API.
+
 ## 🔒 Sécurité
 
 - Hashage des mots de passe (PasswordHasher Symfony)

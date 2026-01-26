@@ -10,14 +10,16 @@ use App\Entity\Traits\BlameableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CertificationRepository::class)]
-#[ORM\Table(name: 'certifications',
+#[ORM\Table(
+    name: 'certifications',
     uniqueConstraints: [new ORM\UniqueConstraint(name: 'uniq_cert_user_theme', columns: ['user_id', 'theme_id'])]
-    )]
+)]
+#[ORM\HasLifecycleCallbacks]
 class Certification
 {
     use TimestampableTrait;
     use BlameableTrait;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
