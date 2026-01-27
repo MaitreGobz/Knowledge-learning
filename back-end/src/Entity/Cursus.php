@@ -25,7 +25,7 @@ class Cursus
     private ?int $id = null;
 
     //Relations
-    #[ORM\ManyToOne(targetEntity: Theme::class)]
+    #[ORM\ManyToOne(targetEntity: Theme::class, inversedBy: 'cursus')]
     #[ORM\JoinColumn(name: 'theme_id', referencedColumnName: 'id', nullable: false)]
     private ?Theme $theme = null;
 

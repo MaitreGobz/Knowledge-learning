@@ -13,9 +13,7 @@ final class CursusControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        /**
-         * First, call the /api/themes endpoint to get a cursus ID.
-         */
+        // First, call the /api/themes endpoint to get a cursus ID.
         $client->request('GET', '/api/themes');
 
         self::assertResponseIsSuccessful();
@@ -53,9 +51,7 @@ final class CursusControllerTest extends WebTestCase
             'Aucun cursus n\'a été trouvé via /api/themes.'
         );
 
-        /**
-         * Call the /api/cursus/{id} endpoint to get cursus details.
-         */
+        // Call the /api/cursus/{id} endpoint to get cursus details.
         $client->request('GET', '/api/cursus/' . $cursusId);
 
         self::assertResponseIsSuccessful();

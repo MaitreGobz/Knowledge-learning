@@ -12,13 +12,9 @@ use App\Entity\Traits\BlameableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AccessRightRepository::class)]
-#[ORM\Table(
-    name: 'access_rights',
-    uniqueConstraints: [
-        new ORM\UniqueConstraint(name: 'uniq_access_right_cursus', columns: ['user_id', 'cursus_id']),
-        new ORM\UniqueConstraint(name: 'uniq_access_right_lesson', columns: ['user_id', 'lesson_id'])
-    ]
-)]
+#[ORM\Table(name: 'access_rights')]
+#[ORM\UniqueConstraint(name: 'uniq_user_cursus', columns: ['user_id', 'cursus_id'])]
+#[ORM\UniqueConstraint(name: 'uniq_user_lesson', columns: ['user_id', 'lesson_id'])]
 #[ORM\HasLifecycleCallbacks]
 class AccessRight
 {
