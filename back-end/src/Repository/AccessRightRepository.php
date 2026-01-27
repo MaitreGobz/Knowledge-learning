@@ -3,6 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\AccessRight;
+use App\Entity\Cursus;
+use App\Entity\Lesson;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +19,43 @@ class AccessRightRepository extends ServiceEntityRepository
         parent::__construct($registry, AccessRight::class);
     }
 
-    //    /**
-    //     * @return AccessRight[] Returns an array of AccessRight objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('a.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Check if a user has access to a specific lesson based on their access rights and purchase status.
+     */
+    public function lessonAccess(User $user, Lesson $lesson, array $validStatuses): bool
+    {
+        $count = (int) $this->createQueryBuilder('ar')
+            ->select('COUNT(ar.id)')
+            ->leftJoin('ar.purchase', 'p')
+            ->andWhere('ar.user = :user')
+            ->andWhere('ar.lesson = :lesson')
+            ->andWhere('(p.id IS NULL OR p.status IN (:statuses))')
+            ->setParameter('user', $user)
+            ->setParameter('lesson', $lesson)
+            ->setParameter('statuses', $validStatuses)
+            ->getQuery()
+            ->getSingleScalarResult();
 
-    //    public function findOneBySomeField($value): ?AccessRight
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $count > 0;
+    }
+
+    /**
+     * Check if a user has access to a specific cursus based on their access rights and purchase status.
+     */
+    public function cursusAccess(User $user, Cursus $cursus, array $validStatuses): bool
+    {
+        $count = (int) $this->createQueryBuilder('ar')
+            ->select('COUNT(ar.id)')
+            ->leftJoin('ar.purchase', 'p')
+            ->andWhere('ar.user = :user')
+            ->andWhere('ar.cursus = :cursus')
+            ->andWhere('(p.id IS NULL OR p.status IN (:statuses))')
+            ->setParameter('user', $user)
+            ->setParameter('cursus', $cursus)
+            ->setParameter('statuses', $validStatuses)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $count > 0;
+    }
 }

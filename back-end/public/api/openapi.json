@@ -1630,7 +1630,7 @@
         "/api/payments/checkout": {
             "post": {
                 "tags": [
-                    "Payments"
+                    "Payment"
                 ],
                 "summary": "Créer une session Stripe Checkout (cursus/leçon)",
                 "description": "Handle checkout session creation for cursus or lesson purchase.",
@@ -1720,6 +1720,24 @@
                 }
             }
         },
+        "/api/stripe/webhook": {
+            "post": {
+                "tags": [
+                    "Payment"
+                ],
+                "summary": "Endpoint pour les webhooks Stripe",
+                "description": "Reçoit et traite les événements webhook envoyés par Stripe.",
+                "operationId": "596c9247e0759352adab33f5cdc617c2",
+                "responses": {
+                    "200": {
+                        "description": "Webhook reçu et traité avec succès."
+                    },
+                    "400": {
+                        "description": "Signature manquante ou invalide."
+                    }
+                }
+            }
+        },
         "/api/ping": {
             "get": {
                 "tags": [
@@ -1735,12 +1753,85 @@
                 }
             }
         },
+        "/api/lessons/{id}": {
+            "get": {
+                "tags": [
+                    "Private"
+                ],
+                "summary": "Afficher le détail d'une leçon (accès soumis à achat)",
+                "description": "Show details of a specific lesson after access rights verification.",
+                "operationId": "76202b387470ed47d3b2f431c65c48b5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 100
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Leçon récupérée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 100
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "example": "Leçon 1"
+                                        },
+                                        "content": {
+                                            "type": "string",
+                                            "example": "Lorem ipsum..."
+                                        },
+                                        "videoUrl": {
+                                            "type": "string",
+                                            "example": "https://...",
+                                            "nullable": true
+                                        },
+                                        "position": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "price": {
+                                            "type": "integer",
+                                            "example": 26
+                                        },
+                                        "cursusId": {
+                                            "type": "integer",
+                                            "example": 10
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "403": {
+                        "description": "Accès interdit (achat requis)"
+                    },
+                    "404": {
+                        "description": "Leçon introuvable"
+                    }
+                }
+            }
+        },
         "/api/cursus/{id}": {
             "get": {
                 "tags": [
                     "Cursus"
                 ],
-                "summary": "Afficher le détail d\\’un cursus avec un aperçu des leçons",
+                "summary": "Afficher le détail d'un cursus avec un aperçu des leçons",
                 "description": "Get details of a specific cursus by ID, including a preview of its lessons.",
                 "operationId": "bde2d047818157d1f9f830b73828c63c",
                 "parameters": [
@@ -1910,12 +2001,16 @@
             "description": "Admin - Users"
         },
         {
-            "name": "Payments",
-            "description": "Payments"
+            "name": "Payment",
+            "description": "Payment"
         },
         {
             "name": "System",
             "description": "System"
+        },
+        {
+            "name": "Private",
+            "description": "Private"
         },
         {
             "name": "Cursus",
