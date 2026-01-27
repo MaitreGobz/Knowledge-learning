@@ -17,7 +17,7 @@ final class CursusController extends AbstractController
     #[Route('/api/cursus/{id}', name: 'api_cursus_details', methods: ['GET'])]
     #[OA\Get(
         path: '/api/cursus/{id}',
-        summary: 'Afficher le détail d\’un cursus avec un aperçu des leçons',
+        summary: 'Afficher le détail d\'un cursus avec un aperçu des leçons',
         tags: ['Cursus']
     )]
 
