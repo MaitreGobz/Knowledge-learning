@@ -25,7 +25,7 @@ final class PaymentController extends AbstractController
     #[OA\Post(
         path: '/api/payments/checkout',
         summary: 'Créer une session Stripe Checkout (cursus/leçon)',
-        tags: ['Payments']
+        tags: ['Payment']
     )]
     #[OA\Parameter(
         name: 'X-CSRF-TOKEN',

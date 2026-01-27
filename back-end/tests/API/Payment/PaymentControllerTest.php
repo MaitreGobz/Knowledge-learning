@@ -32,6 +32,7 @@ final class PaymentControllerTest extends WebTestCase
      */
     private function createUser(string $email, string $plainPassword, array $roles): User
     {
+        // Create user entity
         $user = new User();
         $user->setEmail($email);
         $user->setRoles($roles);

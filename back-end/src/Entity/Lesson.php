@@ -23,7 +23,7 @@ class Lesson
     private ?int $id = null;
 
     //Relations
-    #[ORM\ManyToOne(targetEntity: Cursus::class)]
+    #[ORM\ManyToOne(targetEntity: Cursus::class, inversedBy: 'lessons')]
     #[ORM\JoinColumn(name: 'cursus_id', referencedColumnName: 'id', nullable: false)]
     private ?Cursus $cursus = null;
 
