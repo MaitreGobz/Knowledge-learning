@@ -54,4 +54,28 @@ class LessonValidation
 
         return $this;
     }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getLesson(): Lesson
+    {
+        return $this->lesson;
+    }
+
+    public function setLesson(Lesson $lesson): static
+    {
+        $this->lesson = $lesson;
+
+        return $this;
+    }
 }
