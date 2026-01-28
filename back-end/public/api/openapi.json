@@ -1826,6 +1826,69 @@
                 }
             }
         },
+        "/api/private/lessons/{id}/validate": {
+            "post": {
+                "tags": [
+                    "Private"
+                ],
+                "summary": "Valider une leçon (accès soumis à achat)",
+                "description": "Valide la leçon pour l'utilisateur connecté. Si toutes les leçons du cursus sont validées, le cursus est validé automatiquement.",
+                "operationId": "53668e3177a20cf5928c4c7e5393cb1c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la leçon à valider",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Leçon validée",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "lessonId": {
+                                            "type": "integer",
+                                            "example": 100
+                                        },
+                                        "lessonValidated": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "cursusId": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "cursusValidated": {
+                                            "type": "boolean",
+                                            "example": false
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "403": {
+                        "description": "Accès interdit (achat requis)"
+                    },
+                    "404": {
+                        "description": "Leçon introuvable"
+                    },
+                    "409": {
+                        "description": "Leçon déjà validée"
+                    }
+                }
+            }
+        },
         "/api/cursus/{id}": {
             "get": {
                 "tags": [
