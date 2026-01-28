@@ -1,46 +1,47 @@
 <?php
 
-namespace App\Tests\Controller\Api\Lesson;
+namespace App\Tests\Controller\Api\Progress;
 
+use App\Entity\AccessRight;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
- * Tests for lesson access control (401/403/200 admin).
+ *  Tests for lesson validation endpoint
  */
-final class LessonControllerTest extends WebTestCase
+final class LessonValidateControllerTest extends WebTestCase
 {
     /**
      * Get first cursus id from /api/themes fixtures.
      */
     private function getFirstCursusIdFromApi($client): int
     {
-        // Request themes
         $client->request('GET', '/api/themes');
         self::assertResponseIsSuccessful();
 
-        $themesResponse = $client->getResponse();
+        //
+        $response = $client->getResponse();
         self::assertTrue(
-            str_contains((string) $themesResponse->headers->get('Content-Type'), 'application/json'),
+            str_contains((string) $response->headers->get('Content-Type'), 'application/json'),
             'La réponse /api/themes doit être au format JSON.'
         );
 
         // Get content and decode
-        $themesContent = (string) $themesResponse->getContent();
-        self::assertNotSame('', $themesContent);
+        $content = (string) $response->getContent();
+        self::assertNotSame('', $content);
 
-        $themesData = json_decode($themesContent, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
 
         // Assertions on structure
-        self::assertIsArray($themesData);
-        self::assertNotEmpty($themesData);
+        self::assertIsArray($data);
+        self::assertNotEmpty($data);
 
         $cursusId = null;
 
         // Find first cursus id
-        foreach ($themesData as $theme) {
+        foreach ($data as $theme) {
             if (!isset($theme['cursus']) || !is_array($theme['cursus'])) {
                 continue;
             }
@@ -121,51 +122,58 @@ final class LessonControllerTest extends WebTestCase
     }
 
     /**
-     * Anonymous user gets 401 when accessing a lesson.
+     * Fetch CSRF token from /api/auth/csrf.
      */
-    public function testAnonymousCannotAccessLesson(): void
+    private function fetchCsrfToken($client): string
     {
-        $client = static::createClient();
+        $client->request('GET', '/api/auth/csrf', server: ['HTTP_ACCEPT' => 'application/json']);
+        self::assertResponseIsSuccessful();
 
-        $cursusId = $this->getFirstCursusIdFromApi($client);
-        $lessonId = $this->getFirstLessonIdFromCursusApi($client, $cursusId);
+        $data = json_decode((string) $client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        self::assertIsArray($data);
+        self::assertArrayHasKey('csrfToken', $data);
 
-        $client->request('GET', '/api/lessons/' . $lessonId);
-
-        self::assertResponseStatusCodeSame(401);
+        return (string) $data['csrfToken'];
     }
 
     /**
-     * User without access right gets 403 when accessing a lesson.
+     * Test validating a lesson with invalid ID returns 404.
      */
-    public function testUserWithoutAccessRightGets403(): void
+    public function testValidateLessonInvalidIdReturns404(): void
     {
         $client = static::createClient();
+        $this->createUserAndLogin($client, 'u404_' . uniqid() . '@test.com', 'User123!', ['ROLE_USER']);
 
-        $this->createUserAndLogin($client, 'user_no_access_' . uniqid() . '@test.com', 'User123!', ['ROLE_USER']);
+        // Get CSRF token
+        $csrf = $this->fetchCsrfToken($client);
+        $headers = ['HTTP_X_CSRF_TOKEN' => $csrf];
+        $headers = ['HTTP_ACCEPT' => 'application/json'];
 
+        $client->request('POST', '/api/private/lessons/999999/validate', server: $headers);
+
+        self::assertResponseStatusCodeSame(404);
+    }
+
+    /**
+     * Test validating a lesson without purchase returns 403.
+     */
+    public function testValidateLessonWithoutPurchaseReturns403(): void
+    {
+        $client = static::createClient();
+        $this->createUserAndLogin($client, 'u403_' . uniqid() . '@test.com', 'User123!', ['ROLE_USER']);
+
+        // Get a lesson ID
         $cursusId = $this->getFirstCursusIdFromApi($client);
         $lessonId = $this->getFirstLessonIdFromCursusApi($client, $cursusId);
 
-        $client->request('GET', '/api/lessons/' . $lessonId);
+        // Attempt to validate lesson without access right
+        $headers = ['HTTP_ACCEPT' => 'application/json'];
+
+        $csrf = $this->fetchCsrfToken($client);
+        $headers['HTTP_X_CSRF_TOKEN'] = $csrf;
+
+        $client->request('POST', '/api/private/lessons/' . $lessonId . '/validate', server: $headers);
 
         self::assertResponseStatusCodeSame(403);
-    }
-
-    /**
-     * Admin user can access a lesson without purchase.
-     */
-    public function testAdminCanAccessLessonWithoutPurchase(): void
-    {
-        $client = static::createClient();
-
-        $this->createUserAndLogin($client, 'admin_' . uniqid() . '@test.com', 'Admin123!', ['ROLE_ADMIN']);
-
-        $cursusId = $this->getFirstCursusIdFromApi($client);
-        $lessonId = $this->getFirstLessonIdFromCursusApi($client, $cursusId);
-
-        $client->request('GET', '/api/lessons/' . $lessonId);
-
-        self::assertResponseStatusCodeSame(200);
     }
 }

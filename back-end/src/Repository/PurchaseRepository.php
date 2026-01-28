@@ -19,7 +19,9 @@ class PurchaseRepository extends ServiceEntityRepository
         parent::__construct($registry, Purchase::class);
     }
 
-    // Check if a user has purchased a specific cursus
+    /** 
+     * Check if a user has purchased a specific cursus 
+     */
     public function purchasedCursusByUser(User $user, Cursus $cursus): bool
     {
         return (bool) $this->createQueryBuilder('p')
@@ -32,7 +34,9 @@ class PurchaseRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    // Check if a user has purchased a specific lesson
+    /**
+     * Check if a user has purchased a specific lesson
+     */
     public function purchasedLessonByUser(User $user, Lesson $lesson): bool
     {
         return (bool) $this->createQueryBuilder('p')

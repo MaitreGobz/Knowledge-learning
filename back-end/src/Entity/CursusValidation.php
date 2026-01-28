@@ -54,4 +54,28 @@ class CursusValidation
 
         return $this;
     }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getCursus(): Cursus
+    {
+        return $this->cursus;
+    }
+
+    public function setCursus(Cursus $cursus): static
+    {
+        $this->cursus = $cursus;
+
+        return $this;
+    }
 }
