@@ -16,6 +16,9 @@ class CursusRepository extends ServiceEntityRepository
         parent::__construct($registry, Cursus::class);
     }
 
+    /**
+     * Method to find active cursus by id
+     */
     public function findActiveById(int $id): ?\App\Entity\Cursus
     {
         return $this->createQueryBuilder('c')

@@ -8,6 +8,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * Controller to handle lesson-related API endpoints.
+ */
 final class LessonController extends AbstractController
 {
     #[Route('/api/lessons/{id}', name: 'api_lesson_details', methods: ['GET'])]

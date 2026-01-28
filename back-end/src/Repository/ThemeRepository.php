@@ -16,6 +16,9 @@ class ThemeRepository extends ServiceEntityRepository
         parent::__construct($registry, Theme::class);
     }
 
+    /**
+     * Find all themes with their associated cursus as preview
+     */
     public function findAllWithCursusPreview(): array
     {
         return $this->createQueryBuilder('t')
