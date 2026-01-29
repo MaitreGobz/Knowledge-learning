@@ -10,10 +10,8 @@ use App\Entity\Traits\BlameableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CursusValidationRepository::class)]
-#[ORM\Table(
-    name: 'cursus_validations',
-    uniqueConstraints: [new ORM\UniqueConstraint(name: 'uniq_cv_user_cursus', columns: ['user_id', 'cursus_id'])]
-)]
+#[ORM\Table(name: 'cursus_validations')]
+#[ORM\UniqueConstraint(name: 'uniq_cv_user_cursus', columns: ['user_id', 'cursus_id'])]
 #[ORM\HasLifecycleCallbacks]
 class CursusValidation
 {
