@@ -46,4 +46,38 @@ class LessonRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Count active lessons by cursus ID
+     */
+    public function countActiveByCursusId(int $cursusId): int
+    {
+        return (int) $this->createQueryBuilder('l')
+            ->select('COUNT(l.id)')
+            ->andWhere('l.cursus = :cursusId')
+            ->andWhere('l.isActive = :active')
+            ->setParameter('cursusId', $cursusId)
+            ->setParameter('active', true)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Count active lessons by theme ID
+     */
+    public function countActiveByThemeId(int $themeId): int
+    {
+        return (int) $this->createQueryBuilder('l')
+            ->select('COUNT(l.id)')
+            ->innerJoin('l.cursus', 'c')
+            ->innerJoin('c.theme', 't')
+            ->andWhere('t.id = :themeId')
+            ->andWhere('l.isActive = :active')
+            ->andWhere('c.isActive = :cursusActive')
+            ->setParameter('themeId', $themeId)
+            ->setParameter('active', true)
+            ->setParameter('cursusActive', true)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }
