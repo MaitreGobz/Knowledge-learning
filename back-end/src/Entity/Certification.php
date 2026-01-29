@@ -10,10 +10,8 @@ use App\Entity\Traits\BlameableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CertificationRepository::class)]
-#[ORM\Table(
-    name: 'certifications',
-    uniqueConstraints: [new ORM\UniqueConstraint(name: 'uniq_cert_user_theme', columns: ['user_id', 'theme_id'])]
-)]
+#[ORM\Table(name: 'certifications')]
+#[ORM\UniqueConstraint(name: 'uniq_cert_user_theme', columns: ['user_id', 'theme_id'])]
 #[ORM\HasLifecycleCallbacks]
 class Certification
 {
@@ -51,6 +49,30 @@ class Certification
     public function setValidatedAt(\DateTime $validatedAt): static
     {
         $this->validatedAt = $validatedAt;
+
+        return $this;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getTheme(): Theme
+    {
+        return $this->theme;
+    }
+
+    public function setTheme(Theme $theme): static
+    {
+        $this->theme = $theme;
 
         return $this;
     }
