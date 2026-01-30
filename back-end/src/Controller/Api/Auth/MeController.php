@@ -15,13 +15,13 @@ final class MeController extends AbstractController
     #[Route('/api/auth/me', name: 'api_auth_me', methods: ['GET'])]
     #[OA\Get(
         path: '/api/auth/me',
-        summary: 'Récupérer les informations de l\’utilisateur connecté',
+        summary: 'Récupérer les informations de l\'utilisateur connecté',
         tags: ['Auth']
     )]
 
     #[OA\Response(
         response: 200,
-        description: 'Informations de l\’utilisateur',
+        description: 'Informations de l\'utilisateur',
         content: new OA\JsonContent(
             type: 'object',
             required: ['id', 'email', 'roles'],
@@ -55,8 +55,8 @@ final class MeController extends AbstractController
         return $this->json([
             'authenticated' => true,
             'user' => [
-                'email' => method_exists($user, 'getUserIdentifier') ? $user->getUserIdentifier() : null,
-                'roles' => method_exists($user, 'getRoles') ? $user->getRoles() : [],
+                'email' => $user->getUserIdentifier(),
+                'roles' => $user->getRoles(),
             ],
         ], 200);
     }
