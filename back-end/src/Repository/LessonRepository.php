@@ -2,10 +2,13 @@
 
 namespace App\Repository;
 
+use App\Entity\AccessRight;
 use App\Entity\Lesson;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * @extends ServiceEntityRepository<Lesson>
@@ -79,5 +82,24 @@ class LessonRepository extends ServiceEntityRepository
             ->setParameter('cursusActive', true)
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    public function findAccessibleLessonsForUser(User $user): array
+    {
+        return $this->createQueryBuilder('l')
+            ->select('DISTINCT l.id AS lessonId, l.title AS lessonTitle, l.position AS lessonPosition, c.id AS cursusId, c.title AS cursusTitle')
+            ->innerJoin('l.cursus', 'c')
+            ->leftJoin(AccessRight::class, 'arLesson', Join::WITH, 'arLesson.user = :user AND arLesson.lesson = l')
+            ->leftJoin(AccessRight::class, 'arCursus', Join::WITH, 'arCursus.user = :user AND arCursus.cursus = c')
+            ->andWhere('l.isActive = :active')
+            ->andWhere('c.isActive = :cursusActive')
+            ->andWhere('arLesson.id IS NOT NULL OR arCursus.id IS NOT NULL')
+            ->setParameter('user', $user)
+            ->setParameter('active', true)
+            ->setParameter('cursusActive', true)
+            ->orderBy('c.title', 'ASC')
+            ->addOrderBy('l.position', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
     }
 }

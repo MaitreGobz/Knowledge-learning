@@ -1,5 +1,6 @@
 <section class="container-fluid my-4">
     <div class="admin-users-page">
+        <!-- Title -->
         <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
             <h1 class="kl-title mb-4">Gestion des utilisateurs</h1>
         </div>
@@ -8,6 +9,7 @@
         <div class="alert alert-danger">{{ errorMessage() }}</div>
         }
 
+        <!-- Users Table -->
         @if (loading()) {
         <div class="alert alert-info">Chargement des utilisateurs…</div>
         } @else {
@@ -18,6 +20,7 @@
             (editUser)="openEdit($event)">
         </app-users-table>
 
+        <!-- Create User Button & Pagination -->
         <div class="d-flex justify-content-center my-3">
             <button class="btn bo-btn-create" (click)="openCreate()" [disabled]="loading()">
                 Créer un utilisateur
@@ -33,6 +36,7 @@
     </div>
 </section>
 
+<!-- Modals -->
 @if (modalOpen()) {
 <app-user-form-modal 
     [mode]="modalMode()" 

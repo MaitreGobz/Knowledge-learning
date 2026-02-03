@@ -37,6 +37,14 @@
                     </a>
                 </li>
                 }
+                <!-- My Account link (users only) -->
+                @if (isUser$ | async) {
+                <li class="nav-item">
+                    <a class="nav-link kl-navlink" routerLink="/my-account" routerLinkActive="active">
+                        Mon Compte
+                    </a>
+                </li>
+                }
                 @if (isLoggedIn$ | async) {
                 <button class="btn btn-link kl-navlink" (click)="logout()">Se déconnecter</button>
                 } @else {
