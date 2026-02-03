@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { userGuard } from './guards/user.guard';
 import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
@@ -8,6 +9,7 @@ export const routes: Routes = [
     { path: 'verify-email', loadComponent: () => import('./pages/verify-email-page/verify-email-page.component').then(m => m.VerifyEmailPageComponent) },
     { path: 'themes', loadComponent: () => import('./pages/themes-page/themes-page.component').then(m => m.ThemesPageComponent) },
     { path: 'cursus/:id', loadComponent: () => import('./pages/cursus-page/cursus-page.component').then(m => m.CursusPageComponent) },
+    { path: 'my-account', canActivate: [userGuard], loadComponent: () => import('./pages/my-account-page/my-account-page.component').then(m => m.MyAccountPageComponent) },
     {
         path: 'admin', canActivate: [adminGuard], children: [
             {

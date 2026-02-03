@@ -26,6 +26,11 @@ export class HeaderComponent {
     map(user => !!user?.roles?.includes('ROLE_ADMIN'))
   );
 
+  // User is derived from user$ (no snapshot needed in the template)
+  readonly isUser$ = this.authState.user$.pipe(
+    map(user => !!user?.roles?.includes('ROLE_USER'))
+  );
+
   logout(): void {
     this.auth.logout().subscribe({
       next: () => this.finishLogout(),
