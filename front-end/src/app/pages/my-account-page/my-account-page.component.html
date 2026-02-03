@@ -1,0 +1,109 @@
+<section class="container py-4 my-account">
+
+    <!-- Title -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="kl-title mb-3">Mon Compte</h1>
+        </div>
+    </div>
+
+    <div class="row g-4 align-items-start">
+        <!-- Lessons -->
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="px-3 py-2 fw-bold">
+                        Mes Leçons
+                    </div>
+
+                    @if (loadingLessons) {
+                    <div class="p-3">Chargement des leçons...</div>
+                    } @else if (errorLessons) {
+                    <div class="p-3 text-danger">{{ errorLessons }}</div>
+                    } @else {
+                    <div class="table-responsive">
+                        <table class="table table-bordered mb-0 align-middle">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th scope="col">Leçons</th>
+                                    <th scope="col">Cursus</th>
+                                    <th scope="col" class="text-center" style="width: 120px;">Accès</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @if (lessons.length === 0) {
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted py-4">
+                                        Aucune leçon disponible.
+                                    </td>
+                                </tr>
+                                } @else {
+                                    @for (lesson of lessons; track lesson.lessonId) {
+                                    <tr>
+                                        <td>{{ lesson.lessonTitle }}</td>
+                                        <td>{{ lesson.cursusTitle }}</td>
+                                        <td class="text-center">
+                                            <a class="btn btn-sm btn-primary" [routerLink]="['/lessons', lesson.lessonId]">
+                                                Accéder
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Certifications -->
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="px-3 py-2 fw-bold">
+                        Mes Certifications
+                    </div>
+
+                    @if (loadingCertifications) {
+                    <div class="p-3">Chargement des certifications...</div>
+                    } @else if (errorCertifications) {
+                    <div class="p-3 text-danger">{{ errorCertifications }}</div>
+                    } @else {
+                    <div class="table-responsive">
+                        <table class="table table-bordered mb-0 align-middle">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th scope="col">Thème</th>
+                                    <th scope="col" class="text-center" style="width: 180px;">Validée le</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @if (certifications.length === 0) {
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted py-4">
+                                        Aucune certification obtenue.
+                                    </td>
+                                </tr>
+                                } @else {
+                                    @for (certification of certifications; track certification.themeId) {
+                                    <tr>
+                                        <td>{{ certification.themeTitle }}</td>
+                                        <td class="text-center">
+                                            {{ certification.validatedAt | date:'dd/MM/yyyy' }}
+                                        </td>
+                                    </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
