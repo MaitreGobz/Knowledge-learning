@@ -1,5 +1,6 @@
 <section class="container-fluid my-4">
     <div class="admin-lessons-page">
+        <!-- Title -->
         <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
             <h1 class="kl-title mb-4">Gestion du contenu</h1>
         </div>
@@ -8,6 +9,7 @@
         <div class="alert alert-danger">{{ errorMessage() }}</div>
         }
 
+        <!-- Lessons Table -->
         @if (loading()) {
         <div class="alert alert-info">Chargement des leçons…</div>
         } @else {
@@ -17,6 +19,8 @@
             (desactivateLesson)="onDesactivate($event)"
             (editLesson)="openEdit($event)">
         </app-lessons-table>
+
+        <!-- Create Lesson Button & Pagination -->
         <div class="d-flex justify-content-center my-3">
             <button class="btn bo-btn-create" (click)="openCreate()" [disabled]="loading()">
                 Créer une leçon
@@ -32,6 +36,7 @@
     </div>
 </section>
 
+<!-- Modals -->
 @if (modalOpen()) {
 <app-lesson-form-modal 
     [mode]="modalMode()" 
