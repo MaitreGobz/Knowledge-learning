@@ -1,0 +1,77 @@
+<section class="container py-4 lesson-page">
+
+    @if (loading) {
+    <div class="alert alert-info">Chargement...</div>
+    } @else if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+    } @else if (lesson) {
+
+    <!-- Title -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-12 col-lg-10 text-center">
+            <h1 class="kl-title mb-0">
+                {{ lesson.title }}
+            </h1>
+        </div>
+    </div>
+
+    <!-- Video placeholder -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-12 col-md-10 col-lg-8">
+    
+            @if (lesson.videoUrl) {
+            <div class="ratio ratio-16x9">
+                <video controls class="w-100 h-100">
+                    <source [src]="lesson.videoUrl" type="video/mp4" />
+                    Votre navigateur ne supporte pas la vidéo.
+                </video>
+            </div>
+            }
+    
+        </div>
+    </div>
+
+    <!-- Content text -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-12 col-md-10 col-lg-8 text-center">
+            <p class="mb-0" style="white-space: pre-line;">
+                {{ lesson.content }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Validation area -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-12 col-md-10 col-lg-8 text-center">
+
+            @if (validated) {
+            <!-- Lesson already validated -->
+            <div class="alert alert-warning py-2 mb-3 d-inline-block">
+                La leçon est déjà validée
+            </div>
+            } @else if (validationInfo) {
+            <!-- Generic message after validation -->
+            <div class="alert alert-success py-2 mb-3 d-inline-block">
+                {{ validationInfo }}
+            </div>
+            }
+
+            @if (validateError) {
+            <div class="alert alert-danger py-2 mb-3 d-inline-block">
+                {{ validateError }}
+            </div>
+            }
+
+            <button class="btn validate-btn px-4" (click)="onValidate()" [disabled]="validating || validated">
+                @if (validating) {
+                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                Validation...
+                } @else {
+                Valider la leçon
+                }
+            </button>
+
+        </div>
+    </div>
+    }
+</section>
