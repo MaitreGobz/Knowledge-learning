@@ -97,7 +97,7 @@ ng serve
 ```
 
 Application accessible sur :
-[http://localhost:4200](http://localhost:4200)
+[http://127.0.0.1:4200](http://127.0.0.1:4200)
 
 ## Comptes de démonstration
 
@@ -119,7 +119,7 @@ php bin/console app:create-user user@test.com User123! ROLE_USER
 
 La documentation de l'API est générée via OpenAPI (Swagger)
 Une fois le serveur lancé, elle est accessible à l’adresse :
-[http://localhost:8000/api/doc](http://localhost:8000/api/doc)
+[https://127.0.0.1:8000/api/doc](https://127.0.0.1:8000/api/doc)
 
 ## 💳 Paiement Stripe (Sandbox)
 
