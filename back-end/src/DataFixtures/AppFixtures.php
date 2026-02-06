@@ -32,12 +32,12 @@ class AppFixtures extends Fixture
                         'lessons' => [
                             [
                                 'title' => 'Leçon n°1 : Découverte de l\'instrument',
-                                'videoURL' => '/videos/leçon-musique.mp4',
+                                'videoURL' => 'assets/videos/lecon-musique.mp4',
                                 'price' => 26
                             ],
                             [
                                 'title' => 'Leçon n°2 : Les accords et les gammes',
-                                'videoURL' => '/videos/leçon-musique.mp4',
+                                'videoURL' => 'assets/videos/lecon-musique.mp4',
                                 'price' => 26
                             ],
                         ],
@@ -48,12 +48,12 @@ class AppFixtures extends Fixture
                         'lessons' => [
                             [
                                 'title' => 'Leçon n°1 : Découverte de l\'instrument',
-                                'videoURL' => '/videos/leçon-musique.mp4',
+                                'videoURL' => 'assets/videos/lecon-musique.mp4',
                                 'price' => 26
                             ],
                             [
                                 'title' => 'Leçon n°2 : Les accords et les gammes',
-                                'videoURL' => '/videos/leçon-musique.mp4',
+                                'videoURL' => 'assets/videos/lecon-musique.mp4',
                                 'price' => 26
                             ],
                         ],
@@ -69,12 +69,12 @@ class AppFixtures extends Fixture
                         'lessons' => [
                             [
                                 'title' => 'Leçon n°1 : Les langages Html et CSS',
-                                'videoURL' => '/videos/leçon-informatique.mp4',
+                                'videoURL' => 'assets/videos/lecon-informatique.mp4',
                                 'price' => 32,
                             ],
                             [
                                 'title' => 'Leçon n°2 : Dynamiser votre site avec Javascript',
-                                'videoURL' => '/videos/leçon-informatique.mp4',
+                                'videoURL' => 'assets/videos/lecon-informatique.mp4',
                                 'price' => 32,
                             ],
                         ],
@@ -90,12 +90,12 @@ class AppFixtures extends Fixture
                         'lessons' => [
                             [
                                 'title' => 'Leçon n°1 : Les outils du jardinier',
-                                'videoURL' => '/videos/leçon-jardinage.mp4',
+                                'videoURL' => 'assets/videos/lecon-jardinage.mp4',
                                 'price' => 16,
                             ],
                             [
                                 'title' => 'Leçon n°2 : Jardiner avec la lune',
-                                'videoURL' => '/videos/leçon-jardinage.mp4',
+                                'videoURL' => 'assets/videos/lecon-jardinage.mp4',
                                 'price' => 16,
                             ],
                         ],
@@ -111,12 +111,12 @@ class AppFixtures extends Fixture
                         'lessons' => [
                             [
                                 'title' => 'Leçon n°1 : Les modes de cuisson',
-                                'videoURL' => '/videos/leçon-cuisine.mp4',
+                                'videoURL' => 'assets/videos/lecon-cuisine.mp4',
                                 'price' => 23,
                             ],
                             [
                                 'title' => 'Leçon n°2 : Les saveurs',
-                                'videoURL' => '/videos/leçon-cuisine.mp4',
+                                'videoURL' => 'assets/videos/lecon-cuisine.mp4',
                                 'price' => 23,
                             ],
                         ],
@@ -127,12 +127,12 @@ class AppFixtures extends Fixture
                         'lessons' => [
                             [
                                 'title' => 'Leçon n°1 : Mettre en oeuvre le style dans l\'assiette',
-                                'videoURL' => '/videos/leçon-cuisine.mp4',
+                                'videoURL' => 'assets/videos/lecon-cuisine.mp4',
                                 'price' => 26,
                             ],
                             [
                                 'title' => 'Leçon n°2 : Harmoniser un repas à quatre plats',
-                                'videoURL' => '/videos/leçon-cuisine.mp4',
+                                'videoURL' => 'assets/videos/lecon-cuisine.mp4',
                                 'price' => 26,
                             ],
                         ],

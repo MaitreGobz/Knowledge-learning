@@ -10,6 +10,7 @@ export const routes: Routes = [
     { path: 'themes', loadComponent: () => import('./pages/themes-page/themes-page.component').then(m => m.ThemesPageComponent) },
     { path: 'cursus/:id', loadComponent: () => import('./pages/cursus-page/cursus-page.component').then(m => m.CursusPageComponent) },
     { path: 'my-account', canActivate: [userGuard], loadComponent: () => import('./pages/my-account-page/my-account-page.component').then(m => m.MyAccountPageComponent) },
+    { path: 'lessons/:id', canActivate: [userGuard], loadComponent: () => import('./pages/lesson-details-page/lesson-details-page.component').then(m => m.LessonDetailsPageComponent) },
     {
         path: 'admin', canActivate: [adminGuard], children: [
             {
