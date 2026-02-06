@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Knowledge Learning API{% endblock %}
+
+{% block body %}
+
+<section class="home-container">
+    <h1>Knowledge Learning - Backend API</h1>
+
+    <p>
+        Cette interface sert de point d'entrée technique pour l'API.
+    </p>
+
+    <ul>
+        <li>
+            <strong>Environnement :</strong>
+            {{ app.environment }}
+        </li>
+    </ul>
+</section>
+
+<section class="links-container">
+    <h2>Liens utiles</h2>
+
+    <ul>
+        <li>
+            <a href="/api/doc" target="_blank" rel="noopener">
+                Documentation API (Swagger UI)
+            </a>
+        </li>
+        <li>
+            <a href="/api/ping" target="_blank" rel="noopener">
+                Health check
+            </a>
+        </li>
+    </ul>
+</section>
+
+<section class="about-container">
+    <h2>À propos</h2>
+
+    <p class="about">
+        Cette API alimente l'application e-learning Knowledge Learning.
+        Elle gère l'authentification, les contenus pédagogiques,
+        les achats, la progression et les certifications.
+    </p>
+
+    <ul>
+        <li><strong>Framework :</strong> Symfony</li>
+        <li><strong>Architecture :</strong> API REST</li>
+        <li><strong>Authentification :</strong> Sécurisée</li>
+    </ul>
+</section>
+
+{% endblock %}
