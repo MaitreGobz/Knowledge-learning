@@ -9,6 +9,9 @@ use App\Service\Private\LessonProgressService;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -29,6 +32,13 @@ final class LessonValidateController extends AbstractController
         description: 'ID de la leçon à valider',
         required: true,
         schema: new OA\Schema(type: 'integer')
+    )]
+    #[OA\Parameter(
+        name: 'X-CSRF-TOKEN',
+        in: 'header',
+        required: true,
+        description: 'Token CSRF requis (session cookie). CSRF id: auth',
+        schema: new OA\Schema(type: 'string')
     )]
     #[OA\Response(
         response: 200,
@@ -51,8 +61,16 @@ final class LessonValidateController extends AbstractController
     /**
      * Validate a lesson for the authenticated user.
      */
-    public function validateLesson(int $id, LessonRepository $lessonRepository, LessonProgressService $service): JsonResponse
+    public function validateLesson(int $id, LessonRepository $lessonRepository, LessonProgressService $service, Request $request, CsrfTokenManagerInterface $csrfTokenManager): JsonResponse
     {
+        // CSRF token validation (enabled in prod/dev, bypassed in test)
+        if ($this->getParameter('kernel.environment') !== 'test') {
+            $csrfValue = (string) $request->headers->get('X-CSRF-TOKEN', '');
+            if ($csrfValue === '' || !$csrfTokenManager->isTokenValid(new CsrfToken('auth', $csrfValue))) {
+                return $this->json(['message' => 'Token CRSF invalide.'], 403);
+            }
+        }
+
         // Fetch lesson
         $lesson = $lessonRepository->find($id);
         if (!$lesson || !$lesson->isActive()) {
