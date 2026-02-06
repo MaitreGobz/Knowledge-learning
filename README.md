@@ -203,6 +203,9 @@ Le frontend Angular n’intègre pas de tests unitaires dédiés, l’accent aya
   Les requêtes modifiantes nécessitent un CSRF header
   Possibilité de gestion des utilisateur et des du contenu (leçons)
 
+Les fichiers vidéo (.mp4) ne sont pas versionnés pour éviter d’alourdir le dépôt.
+Ils doivent être placés localement dans `src/assets/videos/`.
+
 ## Auteur
 
 Projet réalisé par Lucas Nayet
