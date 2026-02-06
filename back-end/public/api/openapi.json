@@ -1891,6 +1891,15 @@
                         "schema": {
                             "type": "integer"
                         }
+                    },
+                    {
+                        "name": "X-CSRF-TOKEN",
+                        "in": "header",
+                        "description": "Token CSRF requis (session cookie). CSRF id: auth",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {

@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Psr\Log\LoggerInterface;
 
 final class PaymentController extends AbstractController
@@ -76,8 +78,17 @@ final class PaymentController extends AbstractController
         CursusRepository $cursusRepository,
         LessonRepository $lessonRepository,
         PurchaseRepository $purchaseRepository,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        CsrfTokenManagerInterface $csrfTokenManager,
     ): JsonResponse {
+        // CSRF token validation (enabled in prod/dev, bypassed in test)
+        if ($this->getParameter('kernel.environment') !== 'test') {
+            $csrfValue = (string) $request->headers->get('X-CSRF-TOKEN', '');
+            if ($csrfValue === '' || !$csrfTokenManager->isTokenValid(new CsrfToken('auth', $csrfValue))) {
+                return $this->json(['message' => 'Token CRSF invalide.'], 403);
+            }
+        }
+
         // Get the authenticated user
         $user = $this->getUser();
 
