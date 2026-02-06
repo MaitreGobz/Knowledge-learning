@@ -1396,12 +1396,12 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Récupérer les informations de l\\’utilisateur connecté",
+                "summary": "Récupérer les informations de l'utilisateur connecté",
                 "description": "Handle the request to get the current authenticated user's information",
                 "operationId": "dfa78f9200b5f21a56fef2db5f23a877",
                 "responses": {
                     "200": {
-                        "description": "Informations de l\\’utilisateur",
+                        "description": "Informations de l'utilisateur",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1753,6 +1753,54 @@
                 }
             }
         },
+        "/api/certifications": {
+            "get": {
+                "tags": [
+                    "Private"
+                ],
+                "summary": "Lister les certifications de l'utilisateur connecté",
+                "description": "Récupère toutes les certifications obtenues par l'utilisateur actuellement authentifié.",
+                "operationId": "90333107dc0dbe66742ca2079ba73134",
+                "responses": {
+                    "200": {
+                        "description": "Liste des certifications récupérées avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "required": [
+                                            "themeId",
+                                            "themeTitle",
+                                            "validatedAt"
+                                        ],
+                                        "properties": {
+                                            "themeId": {
+                                                "type": "integer",
+                                                "example": 5
+                                            },
+                                            "themeTitle": {
+                                                "type": "string",
+                                                "example": "Thème A"
+                                            },
+                                            "validatedAt": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2024-01-15T10:00:00+01:00"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                }
+            }
+        },
         "/api/lessons/{id}": {
             "get": {
                 "tags": [
@@ -1889,6 +1937,115 @@
                 }
             }
         },
+        "/api/private/lessons/{id}/validated": {
+            "get": {
+                "tags": [
+                    "Private"
+                ],
+                "summary": "Vérifier si une leçon est validée",
+                "description": "Vérifie si la leçon est validée pour l'utilisateur connecté.",
+                "operationId": "4c73549d8daf35931ef3435fa5f32292",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la leçon à vérifier",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Statut de validation de la leçon",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "lessonId": {
+                                            "type": "integer",
+                                            "example": 100
+                                        },
+                                        "validated": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "404": {
+                        "description": "Leçon introuvable"
+                    },
+                    "409": {
+                        "description": "Leçon déjà validée"
+                    }
+                }
+            }
+        },
+        "/api/private/my-lessons": {
+            "get": {
+                "tags": [
+                    "Private"
+                ],
+                "summary": "Liste les leçons accessibles pour l'utilisateur connecté",
+                "description": "Retourne les leçons auxquelles l'utilisateur a accès via AccessRight (achat leçon ou achat cursus).",
+                "operationId": "08901b40231ea56e2b8fe724260bf667",
+                "responses": {
+                    "200": {
+                        "description": "Liste des leçons accessibles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "required": [
+                                            "lessonId",
+                                            "lessonTitle",
+                                            "cursusId",
+                                            "cursusTitle",
+                                            "lessonPath"
+                                        ],
+                                        "properties": {
+                                            "lessonId": {
+                                                "type": "integer",
+                                                "example": 12
+                                            },
+                                            "lessonTitle": {
+                                                "type": "string",
+                                                "example": "Leçon n°1 : Découverte"
+                                            },
+                                            "cursusId": {
+                                                "type": "integer",
+                                                "example": 3
+                                            },
+                                            "cursusTitle": {
+                                                "type": "string",
+                                                "example": "Cursus guitare"
+                                            },
+                                            "lessonPath": {
+                                                "type": "string",
+                                                "example": "/lessons/12"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    }
+                }
+            }
+        },
         "/api/cursus/{id}": {
             "get": {
                 "tags": [
@@ -1964,6 +2121,21 @@
                     },
                     "404": {
                         "description": "Cursus introuvable"
+                    }
+                }
+            }
+        },
+        "/": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "Page d'accueil de l'API",
+                "description": "Renders the home page of the API.",
+                "operationId": "ee5189ae9f248c3c32b0145c87a2888a",
+                "responses": {
+                    "200": {
+                        "description": "Réponse réussie avec la page d'accueil de l'API"
                     }
                 }
             }
@@ -2078,6 +2250,10 @@
         {
             "name": "Cursus",
             "description": "Cursus"
+        },
+        {
+            "name": "Home",
+            "description": "Home"
         },
         {
             "name": "Themes",
