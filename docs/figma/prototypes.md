@@ -23,9 +23,6 @@
 - My account Page :
   ![My account Page](/docs/figma/exports/prototypes/My%20account%20Page%20Desktop.png)
 
-- Cart Page :
-  ![Cart Page](/docs/figma/exports/prototypes/Cart%20Page%20Desktop.png)
-
 - Back-Office dashboard Page :
   ![Back-Office dashboard Page](/docs/figma/exports/prototypes/Back-Office%20Dashboard%20Page%20Desktop.png)
 
@@ -58,9 +55,6 @@
 - My account Page :
   ![My account Page](/docs/figma/exports/prototypes/My%20account%20Page%20Tablet.png)
 
-- Cart Page :
-  ![Cart Page](/docs/figma/exports/prototypes/Cart%20Page%20Tablet.png)
-
 - Back-Office dashboard Page :
   ![Back-Office dashboard Page](/docs/figma/exports/prototypes/Back-Office%20Dashboard%20Page%20Tablet.png)
 
@@ -92,9 +86,6 @@
 
 - My account Page :
   ![My account Page](/docs/figma/exports/prototypes/My%20account%20Page%20Mobile.png)
-
-- Cart Page :
-  ![Cart Page](/docs/figma/exports/prototypes/Cart%20Page%20Mobile.png)
 
 - Back-Office dashboard Page :
   ![Back-Office dashboard Page](/docs/figma/exports/prototypes/Back-Office%20Dashboard%20Page%20Mobile.png)
