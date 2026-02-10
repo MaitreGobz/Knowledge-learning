@@ -5,13 +5,15 @@
 - id (PK, int)
 - email (varchar, unique, not null)
 - password_hash (varchar, not null)
-- roles (varchar, not null)
+- roles (json, not null) // ex: ["ROLE_USER"], ["ROLE_ADMIN"]
 - is_active (boolean, not null, default true)
 - is_verified (boolean, not null, default false)
+- activation_token (varchar, unique, nullable)
+- activation_token_expires_at (datetime, nullable)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
-- created_by (int)
-- update_by (int)
+- created_by (FK -> users.id, nullable)
+- updated_by (FK -> users.id, nullable)
 
 ## themes
 
@@ -21,8 +23,8 @@
 - slug (varchar, unique, not null)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
-- created_by (int)
-- update_by (int)
+- created_by (FK -> users.id, nullable)
+- updated_by (FK -> users.id, nullable)
 
 ## cursus
 
@@ -34,8 +36,8 @@
 - is_active (boolean, not null, default true)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
-- created_by (int)
-- update_by (int)
+- created_by (FK -> users.id, nullable)
+- updated_by (FK -> users.id, nullable)
 
 ## lessons
 
@@ -49,8 +51,8 @@
 - is_active (boolean, not null, default true)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
-- created_by (int)
-- update_by (int)
+- created_by (FK -> users.id, nullable)
+- updated_by (FK -> users.id, nullable)
 
 ## purchases
 
@@ -64,8 +66,10 @@
 - stripe_session_id (varchar, unique, nullable)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
-- created_by (int)
-- update_by (int)
+- created_by (FK -> users.id, nullable)
+- updated_by (FK -> users.id, nullable)
+
+> Règle métier : un achat concerne soit un cursus, soit une leçon (jamais les deux).
 
 ## access_rights
 
@@ -77,8 +81,11 @@
 - purchase_id (FK -> purchases.id, nullable)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
-- created_by (int)
-- update_by (int)
+- created_by (FK -> users.id, nullable)
+- updated_by (FK -> users.id, nullable)
+
+> Règle métier : un droit d’accès est lié à un seul type de contenu (cursus ou leçon).  
+> Unicité par couple (user, cursus) ou (user, lesson).
 
 ## lesson_validations
 
@@ -88,8 +95,8 @@
 - validated_at (datetime, not null)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
-- created_by (int)
-- update_by (int)
+- created_by (FK -> users.id, nullable)
+- updated_by (FK -> users.id, nullable)
 
 ## cursus_validations
 
@@ -99,8 +106,8 @@
 - validated_at (datetime, not null)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
-- created_by (int)
-- update_by (int)
+- created_by (FK -> users.id, nullable)
+- updated_by (FK -> users.id, nullable)
 
 ## certifications
 
@@ -110,5 +117,5 @@
 - validated_at (datetime, not null)
 - created_at (datetime, not null)
 - updated_at (datetime, not null)
-- created_by (int)
-- update_by (int)
+- created_by (FK -> users.id, nullable)
+- updated_by (FK -> users.id, nullable)
