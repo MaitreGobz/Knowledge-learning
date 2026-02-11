@@ -32,7 +32,7 @@ knowledge-learning/
 - NPM
 - Angular CLI
 - Symfony CLI
-- MySQL
+- MySQL (dev) / Postgres (demo)
 - Compte Stripe (mode test)
 - Compte Mailtrap
 
