@@ -15,6 +15,10 @@ WORKDIR /var/www/html
 # Copier le code
 COPY . .
 
+# Environnement de production
+ENV APP_ENV=prod
+ENV APP_DEBUG=0
+
 # Installer dépendances prod
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
