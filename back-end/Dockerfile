@@ -29,7 +29,12 @@ RUN php bin/console cache:clear --env=prod \
 
 # Apache: document root -> public/
 RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' \
-    /etc/apache2/sites-available/000-default.conf
+    /etc/apache2/sites-available/000-default.conf \
+    && printf '<Directory /var/www/html/public>\n\
+    AllowOverride None\n\
+    Require all granted\n\
+    FallbackResource /index.php\n\
+    </Directory>\n' >> /etc/apache2/sites-available/000-default.conf
 
 # Démarrage: migrations puis apache
 CMD bash -lc "php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || true; apache2-foreground"
