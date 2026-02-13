@@ -36,5 +36,7 @@ RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' \
     FallbackResource /index.php\n\
     </Directory>\n' >> /etc/apache2/sites-available/000-default.conf
 
-# Démarrage: migrations puis apache
-CMD bash -lc "php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || true; apache2-foreground"
+CMD bash -lc "\
+    php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || true; \
+    php bin/console app:seed-demo --no-interaction || true; \
+    apache2-foreground"
