@@ -19,7 +19,7 @@ export class AdminLessonService {
    * GET /api/admin/lessons
    */
   listLessons(params: ListLessonsParams): Observable<AdminLessonsListResponse> {
-    return this.api.get<AdminLessonsListResponse>('/api/admin/lessons', {
+    return this.api.get<AdminLessonsListResponse>('/admin/lessons', {
       params: this.toParamsRecord(params),
     });
   }
@@ -28,28 +28,28 @@ export class AdminLessonService {
    * GET /api/admin/lessons/{id}
    */
   getLesson(id: number): Observable<AdminLessonListItem> {
-    return this.api.get<AdminLessonListItem>(`/api/admin/lessons/${id}`);
+    return this.api.get<AdminLessonListItem>(`/admin/lessons/${id}`);
   }
 
   /**
    * POST /api/admin/lessons
    */
   createLesson(payload: CreateLessonPayload): Observable<AdminLessonWriteResponse> {
-    return this.api.post<AdminLessonWriteResponse>('/api/admin/lessons', payload);
+    return this.api.post<AdminLessonWriteResponse>('/admin/lessons', payload);
   }
 
   /**
    * PATCH /api/admin/lessons/{id}
    */
   updateLesson(id: number, payload: UpdateLessonPayload): Observable<AdminLessonWriteResponse> {
-    return this.api.patch<AdminLessonWriteResponse>(`/api/admin/lessons/${id}`, payload);
+    return this.api.patch<AdminLessonWriteResponse>(`/admin/lessons/${id}`, payload);
   }
 
   /**
    * DELETE /api/admin/lessons/{id}
    */
   desactivateLesson(id: number): Observable<{ message: string }> {
-    return this.api.delete<{ message: string }>(`/api/admin/lessons/${id}`);
+    return this.api.delete<{ message: string }>(`/admin/lessons/${id}`);
   }
 
   /**
@@ -57,7 +57,7 @@ export class AdminLessonService {
    * Used to populate the <select> cursus when creating a lesson
    */
   listCursusOptions(): Observable<AdminCursusOption[]> {
-    return this.api.get<AdminCursusOption[]>('/api/admin/cursus');
+    return this.api.get<AdminCursusOption[]>('/admin/cursus');
   }
 
   /**

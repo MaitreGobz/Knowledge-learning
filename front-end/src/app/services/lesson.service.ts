@@ -10,14 +10,14 @@ export class LessonService {
     private api = inject(ApiService);
 
     getLessonDetails(id: number): Observable<LessonDetailsDto> {
-        return this.api.get<LessonDetailsDto>(`/api/lessons/${id}`);
+        return this.api.get<LessonDetailsDto>(`/lessons/${id}`);
     }
 
     getValidationState(id: number): Observable<LessonValidationStateDto> {
-        return this.api.get<LessonValidationStateDto>(`/api/private/lessons/${id}/validated`);
+        return this.api.get<LessonValidationStateDto>(`/private/lessons/${id}/validated`);
     }
 
     validateLesson(id: number): Observable<LessonValidateResponseDto> {
-        return this.api.post<LessonValidateResponseDto>(`/api/private/lessons/${id}/validate`, {});
+        return this.api.post<LessonValidateResponseDto>(`/private/lessons/${id}/validate`, {});
     }
 }
