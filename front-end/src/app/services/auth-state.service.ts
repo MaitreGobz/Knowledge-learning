@@ -28,7 +28,7 @@ export class AuthStateService {
    * Returns true if authenticated, false otherwise.
    */
   refresh(): Observable<boolean> {
-    return this.api.get<MeResponse>('/api/auth/me').pipe(
+    return this.api.get<MeResponse>('/auth/me').pipe(
         map((res) => {
             const isLoggedIn = !!res?.authenticated;
             this.isLoggedInSubject.next(isLoggedIn);

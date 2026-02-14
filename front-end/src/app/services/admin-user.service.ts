@@ -17,7 +17,7 @@ export class AdminUserService {
      * GET /api/admin/users
      */
     listUsers(params: ListUsersParams): Observable<AdminUsersListResponse> {
-        return this.api.get<AdminUsersListResponse>('/api/admin/users', {
+        return this.api.get<AdminUsersListResponse>('/admin/users', {
             params: this.toParamsRecord(params)
         });
     }
@@ -26,28 +26,28 @@ export class AdminUserService {
      * GET /api/admin/users/{id}
      */
     getUser(id: number): Observable<AdminUserListItem> {
-        return this.api.get<AdminUserListItem>(`/api/admin/users/${id}`);
+        return this.api.get<AdminUserListItem>(`/admin/users/${id}`);
     }
 
     /**
      * POST /api/admin/users
      */
     createUser(payload: CreateUserPayload): Observable<AdminUserListItem> {
-        return this.api.post<AdminUserListItem>('/api/admin/users', payload);
+        return this.api.post<AdminUserListItem>('/admin/users', payload);
     }
 
     /**
      * PATCH /api/admin/users/{id}
      */
     updateUser(id: number, payload: UpdateUserPayload): Observable<AdminUserListItem> {
-        return this.api.patch<AdminUserListItem>(`/api/admin/users/${id}`, payload);
+        return this.api.patch<AdminUserListItem>(`/admin/users/${id}`, payload);
     }
 
     /**
      * DELETE /api/admin/users/{id}
      */
     desactivateUser(id: number): Observable<{ message: string }> {
-        return this.api.delete<{ message: string }>(`/api/admin/users/${id}`);
+        return this.api.delete<{ message: string }>(`/admin/users/${id}`);
     }
 
     /**
