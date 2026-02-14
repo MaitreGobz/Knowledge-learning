@@ -60,7 +60,7 @@ export class AuthService {
      * The backend is responsible for validation and email verification.
      */
     register(payload: RegisterPayload): Observable<RegisterResponse> {
-        return this.api.post<RegisterResponse>('/api/auth/register', payload);
+        return this.api.post<RegisterResponse>('/auth/register', payload);
     }
 
     /**
@@ -68,7 +68,7 @@ export class AuthService {
      * On success, we update the UI auth state.
      */
     login(payload: LoginPayload): Observable<unknown> {
-        return this.api.post('/api/auth/login', payload).pipe(
+        return this.api.post('/auth/login', payload).pipe(
             tap(() => this.setAuthenticated(true))
         );
     }
@@ -79,7 +79,7 @@ export class AuthService {
      * The query string is provided by the backend email link
     */
     verifyEmail(queryString: string): Observable<unknown> {
-        return this.api.get(`/api/auth/verify-email?${queryString}`);
+        return this.api.get(`/auth/verify-email?${queryString}`);
     }
 
     /**
@@ -87,7 +87,7 @@ export class AuthService {
      * On success, we update the UI auth state.
      */
     logout(): Observable<unknown> {
-        return this.api.post('/api/auth/logout', {}).pipe(
+        return this.api.post('/auth/logout', {}).pipe(
             tap(() => this.setAuthenticated(false))
         );
     }
