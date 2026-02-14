@@ -1,5 +1,5 @@
 export const environment = {
     production: false,
-    apiBaseUrl: 'http://127.0.0.1:8000',
+    apiBaseUrl: '/api',
     stripePublicKey: 'pk_test_51Hxxxxxx',
 }

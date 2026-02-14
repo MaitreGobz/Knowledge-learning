@@ -9,7 +9,7 @@ export class ThemeService {
 
   // Public catalog endpoint to get all themes, return themes with a preview list of cursus
   getThemesWithCursusPreview(): Observable<ThemeCursusPreview[]> {
-    return this.api.get<ThemeCursusPreview[]>('/api/themes');
+    return this.api.get<ThemeCursusPreview[]>('/themes');
   }
 
   // General endpoint to get all themes

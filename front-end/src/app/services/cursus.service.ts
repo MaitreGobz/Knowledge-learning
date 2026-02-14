@@ -9,6 +9,6 @@ export class CursusService {
     
     // Public catalog endpoint to get a cursus with a preview list of lessons
     getCursusWithLessonsPreview(cursusId: number): Observable<CursusLessonPreview> {
-        return this.api.get<CursusLessonPreview>(`/api/cursus/${cursusId}`);
+        return this.api.get<CursusLessonPreview>(`/cursus/${cursusId}`);
     }
 }

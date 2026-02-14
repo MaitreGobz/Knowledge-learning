@@ -10,10 +10,10 @@ export class MyAccountService {
   private api = inject(ApiService);
 
   getMyLessons(): Observable<MyLessonDto[]> {
-    return this.api.get<MyLessonDto[]>('/api/private/my-lessons');
+    return this.api.get<MyLessonDto[]>('/private/my-lessons');
   }
 
   getMyCertifications(): Observable<CertificationDto[]> {
-    return this.api.get<CertificationDto[]>('/api/certifications');
+    return this.api.get<CertificationDto[]>('/certifications');
   }
 }
