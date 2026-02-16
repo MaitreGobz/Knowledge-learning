@@ -206,6 +206,11 @@ Le frontend Angular n’intègre pas de tests unitaires dédiés, l’accent aya
 Les fichiers vidéo (.mp4) ne sont pas versionnés pour éviter d’alourdir le dépôt.
 Ils doivent être placés localement dans `src/assets/videos/`.
 
+## Démo
+
+L'application a été mise en ligne en version démo pour qu'un utilisateur puisse tester les différentes fonctionnalités à l'adresse suivante:
+[https://knowledge-learning.vercel.app/](https://knowledge-learning.vercel.app/)
+
 ## Auteur
 
 Projet réalisé par Lucas Nayet
