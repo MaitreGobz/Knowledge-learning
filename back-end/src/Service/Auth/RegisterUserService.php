@@ -17,6 +17,7 @@ final class RegisterUserService
         private readonly EntityManagerInterface $em,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly EmailVerifier $emailVerifier,
+        private readonly string $mailerSender,
     ) {}
 
     public function register(RegisterRequest $dto): User
@@ -41,7 +42,7 @@ final class RegisterUserService
 
         // Send signed verification email (Mailtrap will receive it)
         $email = (new TemplatedEmail())
-            ->from('no-reply@knowledge-learning.local')
+            ->from($this->mailerSender)
             ->to($user->getEmail())
             ->subject('Confirm your email')
             ->htmlTemplate('/registration/verify_email.html.twig')
