@@ -34,7 +34,7 @@ export class CsrfService {
 
         // 3) New API request
         this.csrfTokenRequest$ = this.api
-            .get<CsrfResponse>('/api/auth/csrf')
+            .get<CsrfResponse>('/auth/csrf')
             .pipe(
                 map((res) => res.csrfToken),
                 tap((token) => (this.csrfToken = token)),

@@ -57,11 +57,24 @@ Configuration de l’environnement
 Créer un fichier .env.local :
 
 ```bash
+APP_ENV=dev
 DATABASE_URL="mysql://user:password@127.0.0.1:3306/knowledge_learning?serverVersion=8.0"
 MAILER_DSN=smtp://user:password@smtp.mailtrap.io:2525
 STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxx
 STRIPE_PUBLIC_KEY=pk_test_xxxxxxxxxxxxx
 ```
+
+Créer un fichier .env.test :
+
+```bash
+APP_ENV=test
+DATABASE_URL="mysql://user:password@127.0.0.1:3306/knowledge_learning?serverVersion=8.0"
+MAILER_DSN=smtp://user:password@smtp.mailtrap.io:2525
+STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxx
+STRIPE_PUBLIC_KEY=pk_test_xxxxxxxxxxxxx
+```
+
+⚠️ La base de données de test doit être différente de celle du développement.
 
 Base de données :
 
